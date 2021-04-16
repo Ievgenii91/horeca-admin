@@ -1,17 +1,35 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import App from './components/App.js';
+import { Provider } from 'react-redux';
+import store from './stores';
+import { BrowserRouter } from 'react-router-dom';
+import { Auth0Provider } from '@auth0/auth0-react';
+import Wrapper from './auth/Wrapper';
+
+const onRedirectCallback = (appState) => {
+  window.history.replaceState(
+    {},
+    document.title,
+    appState && appState.targetUrl ? appState.targetUrl : window.location.pathname,
+  );
+};
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  <Auth0Provider
+    domain="dev-jjc0qxdi.eu.auth0.com"
+    clientId="NJsxplAtp8J6oTiSjtrWhpo1VIr7GiGZ"
+    audience="https://bilyynalyv.herokuapp.com/permissions"
+    redirectUri={window.location.origin}
+    onRedirectCallback={onRedirectCallback}
+  >
+    <Wrapper>
+      <Provider store={store}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </Provider>
+    </Wrapper>
+  </Auth0Provider>,
+  document.getElementById('root'),
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

@@ -1,0 +1,6 @@
+.products-list {
+    background-color: white;
+}
+.products-list th:hover {
+    cursor: pointer;
+}
