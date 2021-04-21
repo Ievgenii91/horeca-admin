@@ -27,7 +27,6 @@ function App({ getClient, isClientLoadFailed, clientId }) {
       try {
         const tkn = await getAccessTokenSilently({
           audience: context.authAudience,
-          scope: 'read:oncoming',
         });
         setToken(tkn);
         getClient(tkn);

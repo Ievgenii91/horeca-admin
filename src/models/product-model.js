@@ -15,7 +15,9 @@ export default class ProductModel {
     this.crossSales = data.crossSales || [];
     this.visible = data.visible || true;
     this.usedForCrossSales = data.usedForCrossSales || false; // TODO name
-    this.image = data.image || '';
+    this.images = data.images || [];
+    this.slug = data.slug || '';
+    this.path = data.path || '';
   }
 }
 
@@ -24,6 +26,13 @@ ProductModel.transformModel = (input) => {
   data.type = data.type ? 'bar' : 'food';
   data.crossSales = data.selectedCrossSales ? data.selectedCrossSales.map((v) => v.value) : [];
   data.usedForCrossSales = data.forCrossSales;
+  data.images = data.images ? [
+    {
+      url: data.images.cdnUrl,
+      alt: data.images.name,
+      isDefault: true,
+    },
+  ]: [];
   delete data.selectedCrossSales;
   delete data.forCrossSales;
   return data;

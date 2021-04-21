@@ -29,6 +29,7 @@ export default function ProductTable({ products, showEditModal, removeItem, sort
                 {nameSortedAsc ? <FaAngleDown onClick={changeSortName} /> : <FaAngleUp onClick={changeSortName} />}
               </th>
               <th>Fancy назва</th>
+              <th>фото?</th>
               <th>
                 Ціна ₴{' '}
                 {priceSortedAsc ? <FaAngleDown onClick={changeSortPrice} /> : <FaAngleUp onClick={changeSortPrice} />}

@@ -13,21 +13,25 @@ export default function ProductTableRows(props) {
     removeClientProduct,
     showEditModal,
     fancyName,
+    images,
   } = props;
+  const hasImage = !!(images && images.length);
   return (
     <tr>
       <td className="p-1 pr-3 pl-3">
-        <a
-          href="#"
+        <button
+          type="button"
+          className="btn btn-link p-0 text-left"
           onClick={(e) => {
             e.preventDefault();
             showEditModal(id);
           }}
         >
           {name}
-        </a>
+        </button>
       </td>
       <td className="p-1 pr-3 pl-3">{fancyName}</td>
+      <td className="p-1 pr-3 pl-3">{hasImage && <FaRegCheckCircle className="text-success" />}</td>
       <td className="p-1 pr-3 pl-3">{price}</td>
       <td className="p-1 pr-3 pl-3">{description}</td>
       <td className="p-1 pr-3 pl-3 text-center">
@@ -40,7 +44,7 @@ export default function ProductTableRows(props) {
       <td className="p-1 pr-3 pl-3">
         <FaTrash
           className="text-info"
-          onClick={(e) => {            
+          onClick={(e) => {
             removeClientProduct(id);
           }}
         />
