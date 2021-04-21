@@ -17,6 +17,7 @@ import {
   UPDATE_TEXTS_SUCCESS,
   SORT,
   GET_PRODUCTS_SUCCESS,
+  GET_PRODUCTS_FAIL,
 } from './clientActionTypes';
 import { getOrdersAsync } from '../orders/ordersActions';
 
@@ -66,10 +67,10 @@ export function getClient(token) {
 export function getProducts(clientId) {
   return async (dispatch) => {
     try {
-      const { products } = await http.get('/product/all', { clientId });
+      const products = await http.get('/product/all', { clientId });
       dispatch(getProductsSuccess(products));
     } catch (e) {
-      dispatch(getClientFail());
+      dispatch(getProductsFail());
     }
   };
 }
@@ -78,6 +79,10 @@ export const getProductsSuccess = (products) => ({
   type: GET_PRODUCTS_SUCCESS,
   payload: products,
 });
+
+export const getProductsFail = () => ({
+  type: GET_PRODUCTS_FAIL
+})
 
 export const saveClientProduct = (product, clientId, token) => {
   return async (dispatch) => {

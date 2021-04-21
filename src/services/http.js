@@ -1,13 +1,11 @@
 import axios from 'axios';
-
-const HOST = 'https://nestbn.herokuapp.com'
 class HttpService {
   async get(url, params, token) {
     const headers = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    const { data } = await axios.get(HOST + '/api' + url, {
+    const { data } = await axios.get(window.config.apiServer + '/api' + url, {
       params,
       headers,
     });
@@ -19,8 +17,8 @@ class HttpService {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    const { data } = await axios.post(HOST + '/api' + url, body, {
-      headers
+    const { data } = await axios.post(window.config.apiServer + '/api' + url, body, {
+      headers,
     });
     return data;
   }

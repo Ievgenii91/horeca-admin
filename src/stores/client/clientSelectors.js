@@ -17,6 +17,8 @@ export const isThereUnsavedProduct = createSelector(
 
 export const isClientLoadFailed = createSelector(getClient, (client) => client.clientLoadFailed);
 
+export const isErrorShown = createSelector(getClient, (client) => client.error);
+
 export const getUnsavedProduct = createSelector(
   [getProducts, isThereUnsavedProduct],
   (products, isThereUnsavedProduct) => {

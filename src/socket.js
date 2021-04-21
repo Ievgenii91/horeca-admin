@@ -3,17 +3,16 @@ let socket = null;
 
 export default function getSocket(token, clientId) {
   if (!socket && token && clientId) {
-    // socket = io('http://localhost:8080', {
-    //   transports: ['websocket'],
-    //   reconnectionDelayMax: 10000,
-    //   auth: {
-    //     token,
-    //   },
-    //   query: {
-    //     clientId,
-    //   },
-    // });
-    socket = io();
+    socket = io(window.config.apiServer, {
+      transports: ['websocket'],
+      reconnectionDelayMax: 10000,
+      auth: {
+        token,
+      },
+      query: {
+        clientId,
+      },
+    });
 
     socket.on('connect_error', (err) => {
       console.log('connect_error', err.message); // prints the message associated with the error

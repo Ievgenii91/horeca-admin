@@ -2,7 +2,7 @@ import { ADD_ORDER, FINISH_ORDER, GET_ORDERS_SUCCESS, REMOVE_ORDER } from './ord
 
 const initialOrders = [];
 
-export default function (state = initialOrders, action) {
+export default function ordersReducer(state = initialOrders, action) {
   switch (action.type) {
     case GET_ORDERS_SUCCESS: {
       return [...action.payload];

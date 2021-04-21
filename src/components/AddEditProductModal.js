@@ -17,7 +17,7 @@ function AddEditProductModal({ product, availableCrossSales, edit, visible, onCo
   };
 
   return (
-    <Modal show={show} onHide={hide}>
+    <Modal show={show} onHide={hide} size="xl">
       <Modal.Header>
         <Modal.Title>{edit ? 'Редагування продукту' : 'Додати продукт'}</Modal.Title>
       </Modal.Header>

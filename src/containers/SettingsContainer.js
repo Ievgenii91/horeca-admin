@@ -8,6 +8,7 @@ import {
   getProducts,
   isThereUnsavedProduct,
   getClientId,
+  isErrorShown,
 } from '../stores/client/clientSelectors';
 import ProductTable from '../components/ProductTable';
 import ConfirmModal from '../components/ConfirmModal';
@@ -24,13 +25,14 @@ function SettingsContainer({
   filterByName,
   sort,
   clientId,
+  error,
 }) {
   let token = useGetToken();
   let [show, setShow] = useState(false);
   let [selectedProduct, setSelectedProduct] = useState(null);
   let [productIdToRemove, setProductIdToRemove] = useState(null);
 
-  const showEditModal = (id) => {
+  const showEditModal = (id) => {    
     if (id) {
       setSelectedProduct(products.find((v) => v.id === id));
     } else {
@@ -92,6 +94,7 @@ export default connect(
     availableCrossSales: getAvailableCrossSales(state),
     unsaved: isThereUnsavedProduct(state),
     clientId: getClientId(state),
+    error: isErrorShown(state),
   }),
   {
     saveClientProduct,

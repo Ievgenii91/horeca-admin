@@ -10,6 +10,8 @@ import {
   REFRESH_TEXTS,
   SORT,
   GET_PRODUCTS_SUCCESS,
+  GET_PRODUCTS_FAIL,
+  CLEAR_ERROR,
 } from './clientActionTypes';
 
 const initialOrders = {
@@ -18,10 +20,17 @@ const initialOrders = {
   allProducts: [],
   users: [],
   texts: null,
+  error: null,
 };
 
 export default function clientReducer(state = initialOrders, action) {
   switch (action.type) {
+    case CLEAR_ERROR: {
+      return {
+        ...state,
+        error: null,
+      };
+    }
     case GET_CLIENT_SUCCESS: {
       const client = action.payload;
       client.products = client.products.map((v) => {
@@ -61,6 +70,14 @@ export default function clientReducer(state = initialOrders, action) {
         ...state,
         products,
         allProducts: products,
+      };
+    }
+
+    case GET_PRODUCTS_FAIL: {
+      return {
+        ...state,
+        allProducts: [],
+        error: 'Failed to load products'
       };
     }
 
