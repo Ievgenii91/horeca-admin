@@ -6,6 +6,7 @@ import store from './stores';
 import { BrowserRouter } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
 import Wrapper from './auth/Wrapper';
+import { EnvironmentContext, envVars } from './context';
 
 const onRedirectCallback = (appState) => {
   window.history.replaceState(
@@ -16,20 +17,22 @@ const onRedirectCallback = (appState) => {
 };
 
 ReactDOM.render(
-  <Auth0Provider
-    domain="dev-jjc0qxdi.eu.auth0.com"
-    clientId="NJsxplAtp8J6oTiSjtrWhpo1VIr7GiGZ"
-    audience="https://bilyynalyv.herokuapp.com/permissions"
-    redirectUri={window.location.origin}
-    onRedirectCallback={onRedirectCallback}
-  >
-    <Wrapper>
-      <Provider store={store}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </Provider>
-    </Wrapper>
-  </Auth0Provider>,
+  <EnvironmentContext.Provider value={envVars}>
+    <Auth0Provider
+      domain={envVars.authDomain}
+      clientId={envVars.authClientId}
+      audience={envVars.authAudience}
+      redirectUri={window.location.origin}
+      onRedirectCallback={onRedirectCallback}
+    >
+      <Wrapper>
+        <Provider store={store}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </Provider>
+      </Wrapper>
+    </Auth0Provider>
+  </EnvironmentContext.Provider>,
   document.getElementById('root'),
 );

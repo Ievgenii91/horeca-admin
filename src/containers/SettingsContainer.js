@@ -63,7 +63,7 @@ function SettingsContainer({
         visible={show}
         product={selectedProduct}
         availableCrossSales={availableCrossSales}
-        onConfirm={(data) => {
+        onConfirm={(data) => {        
           saveClientProduct(ProductModel.transformModel({ ...data, id: selectedProduct.id }), clientId, token);
           setShow(false);
         }}

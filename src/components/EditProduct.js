@@ -1,9 +1,10 @@
 import Form from 'react-bootstrap/Form';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import MultiSelect from 'react-multi-select-component';
 import { useForm, Controller } from 'react-hook-form';
+import { Widget } from '@uploadcare/react-widget';
 import PropTypes from 'prop-types';
-
+import { EnvironmentContext } from '../context';
 function EditProduct(props) {
   const {
     product: {
@@ -31,6 +32,9 @@ function EditProduct(props) {
     formState: { touched },
   } = useForm();
 
+  const context = useContext(EnvironmentContext);
+
+  const [images, setImages] = useState([]);
   const [selectedCrossSales, setSelected] = useState(null);
   const [forCrossSales, setForCrossSales] = useState(null);
 
@@ -127,6 +131,19 @@ function EditProduct(props) {
             defaultChecked={forCrossSales || false}
           />
         </Form.Group>
+
+        <Controller
+          control={control}
+          name="image"
+          render={({ onChange, value }) => (
+            <Widget
+              publicKey={context.uploadCarePublicKey}
+              onChange={({ uuid }) => {
+                onChange(uuid);
+              }}
+            ></Widget>        
+          )}
+        />
 
         {!forCrossSales && (
           <Form.Group className="mb-3">

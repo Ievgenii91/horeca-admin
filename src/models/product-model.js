@@ -15,6 +15,7 @@ export default class ProductModel {
     this.crossSales = data.crossSales || [];
     this.visible = data.visible || true;
     this.usedForCrossSales = data.usedForCrossSales || false; // TODO name
+    this.image = data.image || '';
   }
 }
 
