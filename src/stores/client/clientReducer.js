@@ -12,9 +12,13 @@ import {
   GET_PRODUCTS_SUCCESS,
   GET_PRODUCTS_FAIL,
   CLEAR_ERROR,
+  TOGGLE_SELECT_CLIENT_MODAL,
+  SET_CLIENTS_META,
 } from './clientActionTypes';
 
 const initialOrders = {
+  clientsMetaData: [],
+  showSelectClientModal: false,
   owner: '',
   products: [],
   allProducts: [],
@@ -25,6 +29,21 @@ const initialOrders = {
 
 export default function clientReducer(state = initialOrders, action) {
   switch (action.type) {
+    
+    case TOGGLE_SELECT_CLIENT_MODAL: {
+      return {
+        ...state,
+        showSelectClientModal: action.payload,
+      }
+    }
+
+    case SET_CLIENTS_META: {
+      return {
+        ...state,
+        clientsMetaData: action.payload
+      }
+    }
+
     case CLEAR_ERROR: {
       return {
         ...state,

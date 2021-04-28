@@ -18,6 +18,8 @@ import {
   SORT,
   GET_PRODUCTS_SUCCESS,
   GET_PRODUCTS_FAIL,
+  TOGGLE_SELECT_CLIENT_MODAL,
+  SET_CLIENTS_META,
 } from './clientActionTypes';
 import { getOrdersAsync } from '../orders/ordersActions';
 
@@ -28,6 +30,16 @@ export const getClientFail = () => ({
 export const getClientSuccess = (client) => ({
   type: GET_CLIENT_SUCCESS,
   payload: client,
+});
+
+export const openSelectClientModal = (show) => ({
+  type: TOGGLE_SELECT_CLIENT_MODAL,
+  payload: show,
+});
+
+export const setReceivedClients = (clientsMetaData) => ({
+  type: SET_CLIENTS_META,
+  payload: clientsMetaData,
 });
 
 export const updateClientProductAvailabilitySuccess = (id) => ({
@@ -50,14 +62,33 @@ export function updateClientProductAvailability({ id, available, token }) {
   };
 }
 
+export function setClient({ id, token }) {
+  return async (dispatch) => {
+    sessionStorage.setItem('clientId', id);
+    await dispatch(getClient(token));
+  }
+}
+
 export function getClient(token) {
   return async (dispatch) => {
     try {
-      const client = await http.get('/client', {}, token);
-      dispatch(getClientSuccess(client));
-      dispatch(getOrdersAsync(client._id));
-
-      dispatch(getTexts(client._id, token));
+      const { data } = await http.get('/client', {}, token);
+      let clients = data;
+      const clientIdFromSession = sessionStorage.getItem('clientId');
+      if(clientIdFromSession) {
+        clients = data.filter(v => v._id === clientIdFromSession);
+      }
+      if(clients.length > 1) {
+        dispatch(openSelectClientModal(true))
+        dispatch(setReceivedClients(clients.map(v => ({ name: v.name, id: v._id }))))
+      } else {
+        const [client] = clients;
+        dispatch(getClientSuccess(client));
+        dispatch(getOrdersAsync(client._id));
+  
+        dispatch(getTexts(client._id, token));
+      }
+ 
     } catch (e) {
       dispatch(getClientFail());
     }

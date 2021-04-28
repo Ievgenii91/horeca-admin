@@ -26,13 +26,6 @@ ProductModel.transformModel = (input) => {
   data.type = data.type ? 'bar' : 'food';
   data.crossSales = data.selectedCrossSales ? data.selectedCrossSales.map((v) => v.value) : [];
   data.usedForCrossSales = data.forCrossSales;
-  data.images = data.images ? [
-    {
-      url: data.images.cdnUrl,
-      alt: data.images.name,
-      isDefault: true,
-    },
-  ]: [];
   delete data.selectedCrossSales;
   delete data.forCrossSales;
   return data;

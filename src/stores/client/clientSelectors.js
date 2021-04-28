@@ -17,6 +17,10 @@ export const isThereUnsavedProduct = createSelector(
 
 export const isClientLoadFailed = createSelector(getClient, (client) => client.clientLoadFailed);
 
+export const getClientsMetaData = createSelector(getClient, (client) => client.clientsMetaData);
+
+export const showSelectClientModal = createSelector(getClient, (client) => client.showSelectClientModal);
+
 export const isErrorShown = createSelector(getClient, (client) => client.error);
 
 export const getUnsavedProduct = createSelector(

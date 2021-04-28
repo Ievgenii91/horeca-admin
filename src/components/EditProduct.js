@@ -42,6 +42,7 @@ function EditProduct(props) {
   } = useForm();
   const { field: widget } = useController({
     name: 'images',
+    defaultValue: images,
     control,
     shouldUnregister: true,
   });
@@ -51,6 +52,19 @@ function EditProduct(props) {
     shouldUnregister: true,
     defaultValue: usedCrossSales(),
   });
+
+  const removeImages = useCallback(() => {
+    widget.onChange([]);
+  }, [widget]);
+
+  const changeImage = useCallback((data) => {
+    const image = {
+      url: data.cdnUrl,
+      alt: data.name,
+      isDefault: !!!images.length,
+    }
+    widget.onChange([...images, image]);
+  }, [widget, images])
 
   const context = useContext(EnvironmentContext);
 
@@ -161,11 +175,12 @@ function EditProduct(props) {
                 {images.map((v) => {
                   return <img width="200px" className="pr-2 pb-4" src={v.url} alt={v.alt} key={v.url} />;
                 })}
+                <button className="btn-sm btn-sm-danger" type="button" onClick={removeImages}>Видалити</button>
               </div>
             )}
             <Widget
               onChange={(data) => {
-                widget.onChange(data);
+                changeImage(data);
               }}                    
               previewStep={true}
               locale="ru"
