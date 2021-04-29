@@ -1,6 +1,6 @@
 {
-	"name": "bn-front",
-	"version": "0.1.0",
+	"name": "horeca-admin",
+	"version": "0.1.1",
 	"private": true,
 	"dependencies": {
 		"@auth0/auth0-react": "^1.0.0",
