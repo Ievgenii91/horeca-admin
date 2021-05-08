@@ -26,7 +26,7 @@ export const removeOrder = (id) => ({
 export const getOrdersAsync = (clientId) => {
   return async (dispatch) => {
     try {
-      let data = await http.get('/orders', { clientId, status: 'new' });
+      let { data } = await http.get('/orders', { clientId, status: 'new' });
       dispatch(getOrdersSuccess(data));
     } catch (e) {
       dispatch(getOrdersFail(e));
