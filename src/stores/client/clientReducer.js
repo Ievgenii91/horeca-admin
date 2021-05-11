@@ -29,19 +29,18 @@ const initialOrders = {
 
 export default function clientReducer(state = initialOrders, action) {
   switch (action.type) {
-    
     case TOGGLE_SELECT_CLIENT_MODAL: {
       return {
         ...state,
         showSelectClientModal: action.payload,
-      }
+      };
     }
 
     case SET_CLIENTS_META: {
       return {
         ...state,
-        clientsMetaData: action.payload
-      }
+        clientsMetaData: action.payload,
+      };
     }
 
     case CLEAR_ERROR: {
@@ -52,13 +51,9 @@ export default function clientReducer(state = initialOrders, action) {
     }
     case GET_CLIENT_SUCCESS: {
       const client = action.payload;
-      client.products = client.products.map((v) => {
-        v.visible = true;
-        return v;
-      });
+      delete client.products;
       return {
         ...client,
-        allProducts: [...client.products],
       };
     }
 
@@ -96,7 +91,7 @@ export default function clientReducer(state = initialOrders, action) {
       return {
         ...state,
         allProducts: [],
-        error: 'Failed to load products'
+        error: 'Failed to load products',
       };
     }
 

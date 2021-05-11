@@ -66,7 +66,7 @@ export function setClient({ id, token }) {
   return async (dispatch) => {
     sessionStorage.setItem('clientId', id);
     await dispatch(getClient(token));
-  }
+  };
 }
 
 export function getClient(token) {
@@ -75,20 +75,20 @@ export function getClient(token) {
       const { data } = await http.get('/client', {}, token);
       let clients = data;
       const clientIdFromSession = sessionStorage.getItem('clientId');
-      if(clientIdFromSession) {
-        clients = data.filter(v => v._id === clientIdFromSession);
+      if (clientIdFromSession) {
+        clients = data.filter((v) => v._id === clientIdFromSession);
       }
-      if(clients.length > 1) {
-        dispatch(openSelectClientModal(true))
-        dispatch(setReceivedClients(clients.map(v => ({ name: v.name, id: v._id }))))
+      if (clients.length > 1) {
+        dispatch(openSelectClientModal(true));
+        dispatch(setReceivedClients(clients.map((v) => ({ name: v.name, id: v._id }))));
       } else {
         const [client] = clients;
+        const clientId = client._id;
+        dispatch(getProducts(clientId));
         dispatch(getClientSuccess(client));
-        dispatch(getOrdersAsync(client._id));
-  
-        dispatch(getTexts(client._id, token));
+        dispatch(getOrdersAsync(clientId));
+        dispatch(getTexts(clientId, token));
       }
- 
     } catch (e) {
       dispatch(getClientFail());
     }
@@ -98,7 +98,7 @@ export function getClient(token) {
 export function getProducts(clientId) {
   return async (dispatch) => {
     try {
-      const products = await http.get('/product/all', { clientId });
+      const { data: products } = await http.get('/product/all', { clientId });
       dispatch(getProductsSuccess(products));
     } catch (e) {
       dispatch(getProductsFail());
@@ -112,8 +112,8 @@ export const getProductsSuccess = (products) => ({
 });
 
 export const getProductsFail = () => ({
-  type: GET_PRODUCTS_FAIL
-})
+  type: GET_PRODUCTS_FAIL,
+});
 
 export const saveClientProduct = (product, clientId, token) => {
   return async (dispatch) => {
