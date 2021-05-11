@@ -17,6 +17,8 @@ export default class ProductModel {
     this.usedForCrossSales = data.usedForCrossSales || false; // TODO name
     this.images = data.images || [];
     this.slug = data.slug || '';
+    this.tags = data.tags || [];
+    this.weight = data.weight || null;
     this.path = data.path || '';
   }
 }
