@@ -53,9 +53,9 @@ export default function clientReducer(state = initialOrders, action) {
     }
     case GET_CLIENT_SUCCESS: {
       const client = action.payload;
-      delete client.products;
       return {
         ...client,
+        products: [],
       };
     }
 
