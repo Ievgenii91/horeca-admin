@@ -1,9 +1,10 @@
-import Form from 'react-bootstrap/Form';
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import MultiSelect from 'react-multi-select-component';
-import { useForm, useController } from 'react-hook-form';
 import { Widget } from '@uploadcare/react-widget';
 import PropTypes from 'prop-types';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import Form from 'react-bootstrap/Form';
+import { useController, useForm } from 'react-hook-form';
+import MultiSelect from 'react-multi-select-component';
+import Select from 'react-select';
 import { EnvironmentContext } from '../context';
 function EditProduct(props) {
   const {
@@ -23,6 +24,7 @@ function EditProduct(props) {
       path,
       images,
     },
+    categories = [],
     availableCrossSales,
     submit,
   } = props;
@@ -34,8 +36,8 @@ function EditProduct(props) {
   }, [availableCrossSales, crossSales]);
 
   const {
-    register,   
-    handleSubmit,    
+    register,
+    handleSubmit,
     control,
     formState: { errors, touchedFields },
   } = useForm({
@@ -44,12 +46,17 @@ function EditProduct(props) {
       description,
       price,
       fancyName,
-      category,
       subCategory,
       additionalText,
       slug,
       path,
     },
+  });
+  const { field: select } = useController({
+    name: 'category',
+    defaultValue: category,
+    control,
+    shouldUnregister: true,
   });
   const { field: widget } = useController({
     name: 'images',
@@ -57,7 +64,9 @@ function EditProduct(props) {
     control,
     shouldUnregister: true,
   });
-  const { field: { ref, ...input } } = useController({
+  const {
+    field: { ref, ...input },
+  } = useController({
     name: 'selectedCrossSales',
     control,
     shouldUnregister: true,
@@ -68,14 +77,24 @@ function EditProduct(props) {
     widget.onChange([]);
   }, [widget]);
 
-  const changeImage = useCallback((data) => {
-    const image = {
-      url: data.cdnUrl,
-      alt: data.name,
-      isDefault: !!!images.length,
-    }
-    widget.onChange([...images, image]);
-  }, [widget, images])
+  const changeImage = useCallback(
+    (data) => {
+      const image = {
+        url: data.cdnUrl,
+        alt: data.name,
+        isDefault: !!!images.length,
+      };
+      widget.onChange([...images, image]);
+    },
+    [widget, images],
+  );
+
+  const getCategory = useCallback(
+    (value) => {
+      return categories.find((v) => v.entityId === value);
+    },
+    [categories],
+  );
 
   const context = useContext(EnvironmentContext);
 
@@ -84,7 +103,7 @@ function EditProduct(props) {
   useEffect(() => {
     setForCrossSales(usedForCrossSales);
   }, [usedForCrossSales, crossSales, availableCrossSales, usedCrossSales]);
-  
+
   const hasError = (field) => {
     return touchedFields[field] && errors[field];
   };
@@ -94,7 +113,7 @@ function EditProduct(props) {
       <Form noValidate onSubmit={handleSubmit(submit)} id="product-form">
         <div className="row">
           <div className="col-6">
-            <Form.Group className="mb-3">                        
+            <Form.Group className="mb-3">
               <Form.Control
                 {...register('name', { required: true })}
                 placeholder="Назва продукту"
@@ -111,33 +130,29 @@ function EditProduct(props) {
               <Form.Control.Feedback type="invalid">Ціна обов'язкове поле</Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Control {...register('fancyName')} placeholder="Назва в онлайн меню"/>
+              <Form.Control {...register('fancyName')} placeholder="Назва в онлайн меню" />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Control
-                type="textarea"
-                {...register('description')}
-                placeholder="Опис"
-              />
+              <Form.Control type="textarea" {...register('description')} placeholder="Опис" />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Control type="textarea" {...register('category')} placeholder="Категорія" />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Control
-                type="textarea"
-                {...register('subCategory')}
-                placeholder="Підкатегорія"                
-              />
+              <Select
+                {...select}
+                options={categories.map((v) => ({
+                  value: v.entityId,
+                  label: v.name,
+                }))}
+                defaultValue={getCategory(select.value)}
+                placeholder="Категорія"
+              ></Select>
             </Form.Group>
 
+            {/* <Form.Group className="mb-3">
+              <Form.Control type="textarea" {...register('subCategory')} placeholder="Підкатегорія" />
+            </Form.Group> */}
+
             <Form.Group className="mb-3">
-              <Form.Control
-                type="textarea"
-                {...register('additionalText')}
-                placeholder="Додатковий текст"
-              />
+              <Form.Control type="textarea" {...register('additionalText')} placeholder="Додатковий текст" />
             </Form.Group>
 
             <Form.Group className="mb-3">
@@ -186,12 +201,14 @@ function EditProduct(props) {
                   return <img width="200px" className="pr-2 pb-4" src={v.url} alt={v.alt} key={v.url} />;
                 })}
                 <p>
-                  <button className="bt btn-danger" type="button" onClick={removeImages}>Видалити все</button>
-                </p>                
+                  <button className="bt btn-danger" type="button" onClick={removeImages}>
+                    Видалити все
+                  </button>
+                </p>
               </div>
             )}
             <Widget
-              onChange={changeImage}                    
+              onChange={changeImage}
               previewStep={true}
               locale="ru"
               tabs="file"
@@ -201,7 +218,7 @@ function EditProduct(props) {
             <p className="mt-3">Наступні поля потрібні для конструктора динамічних сайтів:</p>
 
             <Form.Group className="mb-3">
-              <Form.Control {...register('slug')} placeholder="Назва сторінки або slug"/>
+              <Form.Control {...register('slug')} placeholder="Назва сторінки або slug" />
             </Form.Group>
 
             <Form.Group className="mb-3">

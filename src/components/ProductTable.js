@@ -4,7 +4,7 @@ import ProductTableRows from './ProductTableRows';
 import { FaAngleUp, FaAngleDown } from 'react-icons/fa';
 import '../styles/table.css';
 
-export default function ProductTable({ products, showEditModal, removeItem, sort }) {
+export default function ProductTable({ products, categories, showEditModal, removeItem, sort }) {
   const [nameSortedAsc, setNameSortedAsc] = useState(false);
   const [priceSortedAsc, setPriceSortedAsc] = useState(false);
 
@@ -45,6 +45,7 @@ export default function ProductTable({ products, showEditModal, removeItem, sort
               .filter((v) => v.visible)
               .map((v, index) => (
                 <ProductTableRows
+                  categories={categories}
                   key={'ts_' + index}
                   {...v}
                   showEditModal={showEditModal}

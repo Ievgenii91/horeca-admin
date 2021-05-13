@@ -9,6 +9,7 @@ import {
   isThereUnsavedProduct,
   getClientId,
   isErrorShown,
+  getCategories,
 } from '../stores/client/clientSelectors';
 import ProductTable from '../components/ProductTable';
 import ConfirmModal from '../components/ConfirmModal';
@@ -18,6 +19,7 @@ import { useGetToken } from '../hooks/get-token';
 
 function SettingsContainer({
   products,
+  categories,
   availableCrossSales,
   unsaved,
   saveClientProduct,
@@ -32,7 +34,7 @@ function SettingsContainer({
   let [selectedProduct, setSelectedProduct] = useState(null);
   let [productIdToRemove, setProductIdToRemove] = useState(null);
 
-  const showEditModal = (id) => {    
+  const showEditModal = (id) => {
     if (id) {
       setSelectedProduct(products.find((v) => v.id === id));
     } else {
@@ -59,11 +61,18 @@ function SettingsContainer({
         </div>
       </div>
 
-      <ProductTable products={products} showEditModal={showEditModal} removeItem={setProductIdToRemove} sort={sort} />
+      <ProductTable
+        products={products}
+        categories={categories}
+        showEditModal={showEditModal}
+        removeItem={setProductIdToRemove}
+        sort={sort}
+      />
 
       <AddEditProductModal
         visible={show}
         product={selectedProduct}
+        categories={categories}
         availableCrossSales={availableCrossSales}
         onConfirm={(data) => {
           saveClientProduct(ProductModel.transformModel({ ...data, id: selectedProduct.id }), clientId, token);
@@ -91,6 +100,7 @@ function SettingsContainer({
 export default connect(
   (state) => ({
     products: getProducts(state),
+    categories: getCategories(state),
     availableCrossSales: getAvailableCrossSales(state),
     unsaved: isThereUnsavedProduct(state),
     clientId: getClientId(state),

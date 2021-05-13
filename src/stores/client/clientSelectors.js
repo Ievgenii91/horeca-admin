@@ -31,3 +31,5 @@ export const getUnsavedProduct = createSelector(
 );
 
 export const getTexts = createSelector(getClient, ({ texts }) => texts);
+
+export const getCategories = createSelector(getClient, ({ categories }) => categories);
