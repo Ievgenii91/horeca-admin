@@ -22,6 +22,17 @@ class HttpService {
     });
     return data;
   }
+
+  async delete(url, token) {
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const { data } = await axios.delete(window.config.apiServer + '/api' + url, {
+      headers,
+    });
+    return data;
+  }
 }
 
 export default new HttpService();
