@@ -20,6 +20,8 @@ import {
   GET_PRODUCTS_FAIL,
   TOGGLE_SELECT_CLIENT_MODAL,
   SET_CLIENTS_META,
+  GET_CATEGORIES_SUCCESS,
+  GET_CATEGORIES_FAIL,
 } from './clientActionTypes';
 import { getOrdersAsync } from '../orders/ordersActions';
 
@@ -88,6 +90,7 @@ export function getClient(token) {
         dispatch(getClientSuccess(client));
         dispatch(getOrdersAsync(clientId));
         dispatch(getTexts(clientId, token));
+        dispatch(getCategories(clientId, token));
       }
     } catch (e) {
       dispatch(getClientFail());
@@ -219,3 +222,23 @@ export const refreshTexts = ({ key, value }) => ({
   type: REFRESH_TEXTS,
   payload: { key, value },
 });
+
+export const getCategoriesSuccess = (categories) => ({
+  type: GET_CATEGORIES_SUCCESS,
+  payload: categories,
+});
+
+export const getCategoriesFail = () => ({
+  type: GET_CATEGORIES_FAIL,
+});
+
+export const getCategories = (clientId, token) => {
+  return async (dispatch) => {
+    try {
+      const { data } = await http.get('/category', { clientId }, token);
+      dispatch(getCategoriesSuccess(data));
+    } catch (e) {
+      dispatch(getCategoriesFail());
+    }
+  };
+};
