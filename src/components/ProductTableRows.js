@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaTrash, FaRegCheckCircle, FaRegTimesCircle, FaFunnelDollar, FaHotdog } from 'react-icons/fa';
+import { FaTrash, FaRegCheckCircle, FaRegTimesCircle, FaFunnelDollar, FaHotdog, FaRegDizzy } from 'react-icons/fa';
 
 export default function ProductTableRows(props) {
   const {
@@ -32,7 +32,10 @@ export default function ProductTableRows(props) {
         </button>
       </td>
       <td className="p-1 pr-3 pl-3">{fancyName}</td>
-      <td className="p-1 pr-3 pl-3">{hasImage && <FaRegCheckCircle className="text-success" />}</td>
+      <td className="p-1 pr-3 pl-3">
+        {hasImage && <FaRegCheckCircle className="text-success" />}
+        {!hasImage && <FaRegDizzy className="text-danger" />}{' '}
+      </td>
       <td className="p-1 pr-3 pl-3">{price}</td>
       <td className="p-1 pr-3 pl-3">{description}</td>
       <td className="p-1 pr-3 pl-3 text-center">

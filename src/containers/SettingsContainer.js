@@ -60,6 +60,13 @@ function SettingsContainer({
           </InputGroup>
         </div>
       </div>
+      <div className="row">
+        <div className="col mb-2 mt-0 pl-2">
+          <b>
+          Всього SKU: {products.length} | К-ть категорій: {categories.length} | З фото: {products.filter(v => (v.images && v.images.length)).length}
+          </b>        
+        </div>        
+      </div>
 
       <ProductTable
         products={products}

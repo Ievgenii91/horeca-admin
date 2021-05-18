@@ -6,6 +6,7 @@ import { useController, useForm } from 'react-hook-form';
 import MultiSelect from 'react-multi-select-component';
 import Select from 'react-select';
 import { EnvironmentContext } from '../context';
+import { Button } from 'react-bootstrap';
 function EditProduct(props) {
   const {
     product: {
@@ -52,6 +53,7 @@ function EditProduct(props) {
       path,
     },
   });
+  
   const { field: select } = useController({
     name: 'category',
     defaultValue: category,
@@ -90,8 +92,13 @@ function EditProduct(props) {
   );
 
   const getCategory = useCallback(
-    (value) => {
-      return categories.find((v) => v.entityId === value);
+    ({ value }) => {      
+      if(!value) return null
+      const { name: label } = categories.find((v) => v.entityId === value);
+      return {
+        value,
+        label,
+      }
     },
     [categories],
   );
@@ -142,7 +149,7 @@ function EditProduct(props) {
                   value: v.entityId,
                   label: v.name,
                 }))}
-                defaultValue={getCategory(select.value)}
+                value={getCategory(select.value)}
                 placeholder="Категорія"
               ></Select>
             </Form.Group>
@@ -201,9 +208,9 @@ function EditProduct(props) {
                   return <img width="200px" className="pr-2 pb-4" src={v.url} alt={v.alt} key={v.url} />;
                 })}
                 <p>
-                  <button className="bt btn-danger" type="button" onClick={removeImages}>
+                  <Button variant="outline-danger" size="sm" onClick={removeImages}>
                     Видалити все
-                  </button>
+                  </Button>
                 </p>
               </div>
             )}
