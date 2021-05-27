@@ -15,6 +15,7 @@ import {
   TOGGLE_SELECT_CLIENT_MODAL,
   SET_CLIENTS_META,
   GET_CATEGORIES_SUCCESS,
+  GET_VISITS_SUCCESS,
 } from './clientActionTypes';
 
 const initialOrders = {
@@ -27,6 +28,7 @@ const initialOrders = {
   users: [],
   texts: null,
   error: null,
+  visits: [],
 };
 
 export default function clientReducer(state = initialOrders, action) {
@@ -204,6 +206,13 @@ export default function clientReducer(state = initialOrders, action) {
       return {
         ...state,
         categories: action.payload.map((v) => ({ ...v, entityId: v._id })),
+      };
+    }
+
+    case GET_VISITS_SUCCESS: {
+      return {
+        ...state,
+        visits: action.payload,
       };
     }
 
