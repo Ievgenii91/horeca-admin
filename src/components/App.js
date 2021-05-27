@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import getSocket from '../socket';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-datepicker/dist/react-datepicker.css';
 import '../styles/App.css';
 import Header from './Header';
 import Main from './Main';
@@ -61,16 +62,18 @@ function App({ getClient, setClient, isClientLoadFailed, clientId, showSelectCli
             <Modal.Title>Оберіть свій заклад</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>
-            Ваш акаунт закріплений задекількома закладами, оберіть з яким будете працювати у поточній сессії.
-            </p>
+            <p>Ваш акаунт закріплений задекількома закладами, оберіть з яким будете працювати у поточній сессії.</p>
             {clientsMetaData.map((v, index) => {
               return (
                 <p key={'s432' + index}>
-                  <button className="p-0 m-0 btn btn-link" type="button" onClick={(e) => {
-                    e.preventDefault();
-                    selectClient(index);
-                  }}>
+                  <button
+                    className="p-0 m-0 btn btn-link"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      selectClient(index);
+                    }}
+                  >
                     {v.name}
                   </button>
                 </p>

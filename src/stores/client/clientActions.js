@@ -22,6 +22,9 @@ import {
   SET_CLIENTS_META,
   GET_CATEGORIES_SUCCESS,
   GET_CATEGORIES_FAIL,
+  GET_VISITS,
+  GET_VISITS_SUCCESS,
+  GET_VISITS_FAIL,
 } from './clientActionTypes';
 import { getOrdersAsync } from '../orders/ordersActions';
 
@@ -239,6 +242,26 @@ export const getCategories = (clientId, token) => {
       dispatch(getCategoriesSuccess(data));
     } catch (e) {
       dispatch(getCategoriesFail());
+    }
+  };
+};
+
+export const getVisitsSuccess = (visits) => ({
+  type: GET_VISITS_SUCCESS,
+  payload: visits,
+});
+
+export const getVisitsFail = () => ({
+  type: GET_VISITS_FAIL,
+});
+
+export const fetchVisits = (filter, token) => {
+  return async (dispatch) => {
+    try {
+      const { data } = await http.get('/visits', filter, token);
+      dispatch(getVisitsSuccess(data));
+    } catch (e) {
+      dispatch(getVisitsFail());
     }
   };
 };
