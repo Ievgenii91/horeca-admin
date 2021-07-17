@@ -21,7 +21,7 @@ export default function ProductTable({ products, categories, showEditModal, remo
   return (
     <div className="row">
       {!!products.length && (
-        <Table className="products-list">
+        <Table className="table-list">
           <thead>
             <tr>
               <th>

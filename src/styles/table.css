@@ -1,6 +1,6 @@
-.products-list {
+.table-list {
     background-color: white;
 }
-.products-list th:hover {
+.table-list th:hover {
     cursor: pointer;
 }

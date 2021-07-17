@@ -246,6 +246,28 @@ export const getCategories = (clientId, token) => {
   };
 };
 
+export const updateCategory = (clientId, data, token) => {
+  return async (dispatch) => {
+    try {
+      await http.patch(`/category/${data._id}`, { clientId, ...data }, token);
+      dispatch(getCategories(clientId, token));
+    } catch (e) {
+      dispatch(getCategoriesFail());
+    }
+  };
+};
+
+export const deleteCategory = (clientId, data, token) => {
+  return async (dispatch) => {
+    try {
+      await http.delete(`/category/${data.entityId}`);
+      dispatch(getCategories(clientId, token));
+    } catch (e) {
+      dispatch(getCategoriesFail());
+    }
+  };
+};
+
 export const getVisitsSuccess = (visits) => ({
   type: GET_VISITS_SUCCESS,
   payload: visits,
