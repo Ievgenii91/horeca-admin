@@ -96,7 +96,7 @@ function App({ getClient, setClient, isClientLoadFailed, clientId, showSelectCli
       <Main />
       <Modal show={show}>
         <Modal.Header>
-          <Modal.Title>Заклад за знайдено</Modal.Title>
+          <Modal.Title>Заклад не знайдено</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           Ваш акаунт не закріплений за закладом. Попросіть адміністратора додати ваш обліковий запис <b>{user.email}</b>{' '}

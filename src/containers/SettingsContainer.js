@@ -10,6 +10,7 @@ import {
   getClientId,
   isErrorShown,
   getCategories,
+  getSubCategories,
 } from '../stores/client/clientSelectors';
 import ProductTable from '../components/ProductTable';
 import ConfirmModal from '../components/ConfirmModal';
@@ -20,6 +21,7 @@ import { useGetToken } from '../hooks/get-token';
 function SettingsContainer({
   products,
   categories,
+  subCategories,
   availableCrossSales,
   unsaved,
   saveClientProduct,
@@ -80,6 +82,7 @@ function SettingsContainer({
         visible={show}
         product={selectedProduct}
         categories={categories}
+        subCategories={subCategories}
         availableCrossSales={availableCrossSales}
         onConfirm={(data) => {
           saveClientProduct(ProductModel.transformModel({ ...data, id: selectedProduct.id }), clientId, token);
@@ -104,10 +107,16 @@ function SettingsContainer({
   );
 }
 
+SettingsContainer.defaultProps = {
+  products: [],
+  categories: [],
+}
+
 export default connect(
   (state) => ({
     products: getProducts(state),
     categories: getCategories(state),
+    subCategories: getSubCategories(state),
     availableCrossSales: getAvailableCrossSales(state),
     unsaved: isThereUnsavedProduct(state),
     clientId: getClientId(state),

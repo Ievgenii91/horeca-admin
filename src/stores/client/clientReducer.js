@@ -24,6 +24,7 @@ const initialOrders = {
   owner: '',
   products: [],
   categories: [],
+  subCategories: [],
   allProducts: [],
   users: [],
   texts: null,
@@ -203,9 +204,16 @@ export default function clientReducer(state = initialOrders, action) {
     }
 
     case GET_CATEGORIES_SUCCESS: {
+      let children = [];
       return {
         ...state,
-        categories: action.payload.map((v) => ({ ...v, entityId: v._id })),
+        categories: action.payload.map((v) => {
+          if(v.children) {
+            children = [...children, ...v.children.map(name => ({ value: name, parentId: v._id }))];
+          }
+          return { ...v, entityId: v._id }
+        }),
+        subCategories: children
       };
     }
 

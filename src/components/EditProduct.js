@@ -1,6 +1,6 @@
 import { Widget } from '@uploadcare/react-widget';
 import PropTypes from 'prop-types';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { useController, useForm } from 'react-hook-form';
 import MultiSelect from 'react-multi-select-component';
@@ -26,6 +26,7 @@ function EditProduct(props) {
       images,
     },
     categories = [],
+    subCategories = [],
     availableCrossSales,
     submit,
   } = props;
@@ -46,17 +47,52 @@ function EditProduct(props) {
       name,
       description,
       price,
-      fancyName,
-      subCategory,
+      fancyName,      
       additionalText,
       slug,
       path,
     },
   });
+
+  const getCategory = useCallback(
+    (value) => {
+      if(!value) return null
+      const { name: label } = categories.find((v) => v.entityId === value);
+      return {
+        value,
+        label,
+      }
+    },
+    [categories],
+  );
+
+  const selectedCategory = useMemo(() => getCategory(category), [getCategory, category]);
+
+  const getSubCategory = useCallback(
+    (value) => {
+      if(!value) return null
+      const { value: label } = subCategories.find((v) => v.value === value);
+      return {
+        value,
+        label,
+      }
+    },
+    [subCategories],
+  );
+
+  const selectedSubCategory = useMemo(() => getSubCategory(subCategory), [getSubCategory, subCategory]);
+  const filteredSubCategories = subCategories.filter(v => selectedCategory && v.parentId === selectedCategory.value);
+  const showSubCategories = !!selectedCategory && !!filteredSubCategories.length;
   
   const { field: select } = useController({
     name: 'category',
-    defaultValue: category,
+    defaultValue: selectedCategory,
+    control,
+    shouldUnregister: true,
+  });
+  const { field: selectSub } = useController({
+    name: 'subCategory',
+    defaultValue: selectedSubCategory,
     control,
     shouldUnregister: true,
   });
@@ -89,18 +125,6 @@ function EditProduct(props) {
       widget.onChange([...images, image]);
     },
     [widget, images],
-  );
-
-  const getCategory = useCallback(
-    ({ value }) => {      
-      if(!value) return null
-      const { name: label } = categories.find((v) => v.entityId === value);
-      return {
-        value,
-        label,
-      }
-    },
-    [categories],
   );
 
   const context = useContext(EnvironmentContext);
@@ -149,15 +173,22 @@ function EditProduct(props) {
                   value: v.entityId,
                   label: v.name,
                 }))}
-                value={getCategory(select.value)}
                 placeholder="Категорія"
               ></Select>
             </Form.Group>
 
-            {/* <Form.Group className="mb-3">
-              <Form.Control type="textarea" {...register('subCategory')} placeholder="Підкатегорія" />
-            </Form.Group> */}
-
+            {showSubCategories && (
+              <Form.Group className="mb-3">
+                <Select
+                  {...selectSub}
+                  options={filteredSubCategories.map(({ value }) => ({
+                    value,
+                    label: value,
+                  }))}
+                  placeholder="Підкатегорія"
+                ></Select>
+              </Form.Group>
+            )}
             <Form.Group className="mb-3">
               <Form.Control type="textarea" {...register('additionalText')} placeholder="Додатковий текст" />
             </Form.Group>

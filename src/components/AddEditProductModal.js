@@ -4,7 +4,7 @@ import EditProduct from './EditProduct';
 import { Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
-function AddEditProductModal({ product, categories, availableCrossSales, edit, visible, onConfirm, onCancel }) {
+function AddEditProductModal({ product, categories, subCategories, availableCrossSales, edit, visible, onConfirm, onCancel }) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -25,6 +25,7 @@ function AddEditProductModal({ product, categories, availableCrossSales, edit, v
         <EditProduct
           product={product}
           categories={categories}
+          subCategories={subCategories}
           availableCrossSales={availableCrossSales}
           submit={onConfirm}
         />

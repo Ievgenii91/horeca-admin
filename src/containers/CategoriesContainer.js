@@ -7,6 +7,7 @@ import { getCategories as fetchCategories, updateCategory, deleteCategory } from
 import { getCategories, getClientId } from '../stores/client/clientSelectors';
 import { FaTrash, FaEdit } from 'react-icons/fa';
 import AddEditCategoryModal from '../components/AddEditCategoryModal';
+import { apis } from '../constants/api-routes';
 
 function CategoriesContainer() {
   let token = useGetToken();
@@ -21,14 +22,14 @@ function CategoriesContainer() {
 
   useEffect(() => {
     if (clientId && token) {
-      dispatch(fetchCategories(clientId, token));
+      dispatch(fetchCategories(clientId, token)); 
     }
   }, [clientId, token, dispatch]);
 
   // TODO refactor
   const addCategory = useCallback(async () => {
     try {
-      await http.post('/category', { name, clientId, description });
+      await http.post(apis.categories, { name, clientId, description });
       setName('');
       setDescription('');
       dispatch(fetchCategories(clientId, token));
@@ -47,6 +48,7 @@ function CategoriesContainer() {
     <div className="container-fluid">
       {!!selectedCategory && (
         <AddEditCategoryModal
+          edit={true}
           visible={!!selectedCategory}
           data={selectedCategory}
           onConfirm={(data) => {
@@ -80,6 +82,7 @@ function CategoriesContainer() {
             <tr>
               <th>Ім'я</th>
               <th>Опис</th>
+              <th>Підкатегорії</th>
               <th>ID</th>
               <th>Видалити</th>
               <th>Редагувати</th>
@@ -91,6 +94,7 @@ function CategoriesContainer() {
                 <tr key={v.entityId}>
                   <td>{v.name}</td>
                   <td>{v.description}</td>
+                  <td>{!!v.children.length && v.children.map(v => (<p key={v}>{v}</p>))}</td>
                   <td>{v.entityId}</td>
                   <td>
                     <FaTrash size={24} onClick={() => remove(v)} />

@@ -5,7 +5,7 @@ class HttpService {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    const { data } = await axios.get(window.config.apiServer + '/api' + url, {
+    const { data } = await axios.get(window.config.apiServer + '/api/v1' + url, {
       params,
       headers,
     });
@@ -17,7 +17,7 @@ class HttpService {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    const { data } = await axios.post(window.config.apiServer + '/api' + url, body, {
+    const { data } = await axios.post(window.config.apiServer + '/api/v1' + url, body, {
       headers,
     });
     return data;
@@ -28,7 +28,7 @@ class HttpService {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    const { data } = await axios.patch(window.config.apiServer + '/api' + url, body, {
+    const { data } = await axios.patch(window.config.apiServer + '/api/v1' + url, body, {
       headers,
     });
     return data;
@@ -39,7 +39,7 @@ class HttpService {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    const { data } = await axios.delete(window.config.apiServer + '/api' + url, {
+    const { data } = await axios.delete(window.config.apiServer + '/api/v1' + url, {
       headers,
     });
     return data;

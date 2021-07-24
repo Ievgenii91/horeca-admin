@@ -27,6 +27,7 @@ import {
   GET_VISITS_FAIL,
 } from './clientActionTypes';
 import { getOrdersAsync } from '../orders/ordersActions';
+import { apis } from '../../constants/api-routes';
 
 export const getClientFail = () => ({
   type: GET_CLIENT_FAIL,
@@ -77,7 +78,7 @@ export function setClient({ id, token }) {
 export function getClient(token) {
   return async (dispatch) => {
     try {
-      const { data } = await http.get('/client', {}, token);
+      const { data } = await http.get(apis.currentClient, {}, token);
       let clients = data;
       const clientIdFromSession = sessionStorage.getItem('clientId');
       if (clientIdFromSession) {
@@ -104,7 +105,7 @@ export function getClient(token) {
 export function getProducts(clientId) {
   return async (dispatch) => {
     try {
-      const { data: products } = await http.get('/product/all', { clientId });
+      const { data: products } = await http.get(apis.products, { clientId });
       dispatch(getProductsSuccess(products));
     } catch (e) {
       dispatch(getProductsFail());
@@ -126,9 +127,9 @@ export const saveClientProduct = (product, clientId, token) => {
     try {
       product.clientId = clientId;
       if (product.id) {
-        await http.post(`/product/${product.id}`, product, token);
+        await http.post(`${apis.products}/${product.id}`, product, token);
       } else {
-        await http.post('/product', product, token);
+        await http.post(apis.products, product, token);
       }
       dispatch(getProducts(clientId));
     } catch (e) {
@@ -144,7 +145,7 @@ export const saveClientProductFail = () => ({
 export const removeClientProduct = (id, clientId, token) => {
   return async (dispatch) => {
     try {
-      await http.post('/product/delete', { id, clientId }, token);
+      await http.delete(`${apis.products}/${id}?clientId=${clientId}`, token);
       dispatch(removeClientProductSuccess(id));
     } catch (e) {
       dispatch(removeClientProductFail());
@@ -184,7 +185,7 @@ export const sort = (name, desc) => ({
 export const getTexts = (clientId, token) => {
   return async (dispatch) => {
     try {
-      const texts = await http.get('/texts', { clientId }, token);
+      const texts = await http.get(apis.texts, { clientId }, token);
       dispatch(getTextsSuccess(texts));
     } catch (e) {
       dispatch(getTextsFail());
@@ -204,7 +205,7 @@ export const getTextsFail = () => ({
 export const updateTexts = (data, token) => {
   return async (dispatch) => {
     try {
-      const texts = await http.post('/texts', data, token);
+      const texts = await http.post(apis.texts, data, token);
       dispatch(updateTextsSuccess(texts));
     } catch (e) {
       dispatch(updateTextsFail());
@@ -238,7 +239,7 @@ export const getCategoriesFail = () => ({
 export const getCategories = (clientId, token) => {
   return async (dispatch) => {
     try {
-      const { data } = await http.get('/category', { clientId }, token);
+      const { data } = await http.get(apis.categories, { clientId }, token);
       dispatch(getCategoriesSuccess(data));
     } catch (e) {
       dispatch(getCategoriesFail());
@@ -249,7 +250,7 @@ export const getCategories = (clientId, token) => {
 export const updateCategory = (clientId, data, token) => {
   return async (dispatch) => {
     try {
-      await http.patch(`/category/${data._id}`, { clientId, ...data }, token);
+      await http.patch(`${apis.categories}/${data._id}`, { clientId, ...data }, token);
       dispatch(getCategories(clientId, token));
     } catch (e) {
       dispatch(getCategoriesFail());
@@ -260,7 +261,7 @@ export const updateCategory = (clientId, data, token) => {
 export const deleteCategory = (clientId, data, token) => {
   return async (dispatch) => {
     try {
-      await http.delete(`/category/${data.entityId}`);
+      await http.delete(`${apis.categories}/${data.entityId}`);
       dispatch(getCategories(clientId, token));
     } catch (e) {
       dispatch(getCategoriesFail());
@@ -280,7 +281,7 @@ export const getVisitsFail = () => ({
 export const fetchVisits = (filter, token) => {
   return async (dispatch) => {
     try {
-      const { data } = await http.get('/visits', filter, token);
+      const { data } = await http.get(apis.visits, filter, token);
       dispatch(getVisitsSuccess(data));
     } catch (e) {
       dispatch(getVisitsFail());
