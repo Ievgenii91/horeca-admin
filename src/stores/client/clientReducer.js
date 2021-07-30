@@ -220,7 +220,7 @@ export default function clientReducer(state = initialOrders, action) {
     case GET_VISITS_SUCCESS: {
       return {
         ...state,
-        visits: action.payload,
+        visits: action.payload || [],
       };
     }
 

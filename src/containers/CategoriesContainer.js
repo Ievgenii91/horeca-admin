@@ -46,6 +46,11 @@ function CategoriesContainer() {
 
   return (
     <div className="container-fluid">
+       <div className="row">
+        <div className="col">
+          <h4>Категорії</h4>
+        </div>
+      </div>
       {!!selectedCategory && (
         <AddEditCategoryModal
           edit={true}
@@ -84,23 +89,30 @@ function CategoriesContainer() {
               <th>Опис</th>
               <th>Підкатегорії</th>
               <th>ID</th>
-              <th>Видалити</th>
-              <th>Редагувати</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {categories &&
               categories.map((v) => (
                 <tr key={v.entityId}>
-                  <td>{v.name}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-link p-0 text-left"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        edit(v);
+                      }}
+                    >
+                    {v.name}
+                  </button>
+                  </td>
                   <td>{v.description}</td>
                   <td>{!!v.children.length && v.children.map(v => (<p key={v}>{v}</p>))}</td>
                   <td>{v.entityId}</td>
-                  <td>
-                    <FaTrash size={24} onClick={() => remove(v)} />
-                  </td>
-                  <td>
-                    <FaEdit size={24} onClick={() => edit(v)} />
+                  <td className="text-info p-1 pr-3 pl-3">
+                    <FaTrash onClick={() => remove(v)} />
                   </td>
                 </tr>
               ))}

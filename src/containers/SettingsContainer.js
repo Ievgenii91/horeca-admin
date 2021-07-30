@@ -48,6 +48,11 @@ function SettingsContainer({
   return (
     <div className="container-fluid">
       <div className="row">
+        <div className="col">
+          <h4>Продукти</h4>
+        </div>
+      </div>
+      <div className="row">
         <div className="col p-2">
           <InputGroup className="mb-2">
             <Button variant="primary" disabled={unsaved} onClick={() => showEditModal(null)} className="mr-4">

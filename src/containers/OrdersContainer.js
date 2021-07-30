@@ -34,6 +34,12 @@ class OrdersContainer extends React.Component {
   render() {
     let { orders } = this.props;
     return (
+      <>
+      <div className="row">
+        <div className="col">
+          <h4>Зустрічка</h4>
+        </div>
+      </div>
       <div className="row mt-2">
         {orders
           .filter((v) => v.status === 'new')
@@ -41,6 +47,7 @@ class OrdersContainer extends React.Component {
             return <Order key={`order-${i}`} {...v} markAsDone={this.markAsDone.bind(this)} />;
           })}
       </div>
+      </>
     );
   }
 }

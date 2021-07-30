@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, { useState, useCallback, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import ListGroup from 'react-bootstrap/ListGroup'
 import { useForm } from 'react-hook-form';
 import { FaTrash } from 'react-icons/fa';
-
 function EditCategory(props) {
   const {
     data: {
@@ -17,7 +17,7 @@ function EditCategory(props) {
 
   const [sub, setSub] = useState('');
   const [subCategories, setSubcategories] = useState([]);
-  const hasChildren = subCategories.length || children.length;
+  const hasChildren = !!subCategories.length || !!children.length;
 
   const {
     register,
@@ -85,18 +85,20 @@ function EditCategory(props) {
                 setSub(target.value);
               }}
             />
+          </Form.Group>
+          <p>
             <Button variant="primary" size="sm" onClick={add}>
               Додати
             </Button>
-          </Form.Group>
-       
-          <ul>
+          </p>
+          <ListGroup>
             {
               hasChildren && subCategories.map((v)=> {
-                return <li key={v}>{v} <FaTrash size={12} onClick={() => remove(v)} /></li>
+                return <ListGroup.Item key={v}>{v} <FaTrash size={12} onClick={() => remove(v)} /></ListGroup.Item>
               })
             }
-          </ul>
+          </ListGroup>
+    
         </div>
       </div>
     </Form>

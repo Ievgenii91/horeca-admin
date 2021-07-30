@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import LogoutButton from '../../auth/LogoutButton';
-import { FaCogs, FaHome } from 'react-icons/fa';
+import { FaCogs, FaHome, FaLayerGroup, FaChartBar } from 'react-icons/fa';
 
 export default function Header({ hide }) {
   return (
@@ -17,6 +17,16 @@ export default function Header({ hide }) {
             <div className="nav-item m-3">
               <Link to="/settings">
                 <FaCogs size={32} />
+              </Link>
+            </div>
+            <div className="nav-item m-3">
+              <Link to="/categories">
+                <FaLayerGroup size={32} />
+              </Link>
+            </div>
+            <div className="nav-item m-3">
+              <Link to="/stats">
+                <FaChartBar size={32} />
               </Link>
             </div>
           </>
