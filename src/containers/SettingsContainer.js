@@ -85,6 +85,7 @@ function SettingsContainer({
 
       <AddEditProductModal
         visible={show}
+        clientId={clientId}
         product={selectedProduct}
         categories={categories}
         subCategories={subCategories}

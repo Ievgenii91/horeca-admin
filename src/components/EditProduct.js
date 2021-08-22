@@ -1,4 +1,3 @@
-import { Widget } from '@uploadcare/react-widget';
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import Form from 'react-bootstrap/Form';
@@ -7,8 +6,11 @@ import MultiSelect from 'react-multi-select-component';
 import Select from 'react-select';
 import { EnvironmentContext } from '../context';
 import { Button } from 'react-bootstrap';
+import ReactS3Uploader from 'react-s3-uploader';
+
 function EditProduct(props) {
   const {
+    clientId,
     product: {
       name,
       description,
@@ -31,7 +33,8 @@ function EditProduct(props) {
     submit,
   } = props;
 
-  const hasImages = !!(images && images.length);
+  const [newImages, addImage] = useState([]);
+  const hasImages = !!(images && images.length) || newImages.length;
 
   const usedCrossSales = useCallback(() => {
     return availableCrossSales.filter((v) => (crossSales ?? []).includes(v.value));
@@ -47,7 +50,7 @@ function EditProduct(props) {
       name,
       description,
       price,
-      fancyName,      
+      fancyName,
       additionalText,
       slug,
       path,
@@ -56,12 +59,12 @@ function EditProduct(props) {
 
   const getCategory = useCallback(
     (value) => {
-      if(!value) return null
+      if (!value) return null;
       const { name: label } = categories.find((v) => v.entityId === value);
       return {
         value,
         label,
-      }
+      };
     },
     [categories],
   );
@@ -70,20 +73,20 @@ function EditProduct(props) {
 
   const getSubCategory = useCallback(
     (value) => {
-      if(!value) return null
+      if (!value) return null;
       const { value: label } = subCategories.find((v) => v.value === value);
       return {
         value,
         label,
-      }
+      };
     },
     [subCategories],
   );
 
   const selectedSubCategory = useMemo(() => getSubCategory(subCategory), [getSubCategory, subCategory]);
-  const filteredSubCategories = subCategories.filter(v => selectedCategory && v.parentId === selectedCategory.value);
+  const filteredSubCategories = subCategories.filter((v) => selectedCategory && v.parentId === selectedCategory.value);
   const showSubCategories = !!selectedCategory && !!filteredSubCategories.length;
-  
+
   const { field: select } = useController({
     name: 'category',
     defaultValue: selectedCategory,
@@ -118,13 +121,26 @@ function EditProduct(props) {
   const changeImage = useCallback(
     (data) => {
       const image = {
-        url: data.cdnUrl,
-        alt: data.name,
+        ...data,
         isDefault: !!!images.length,
       };
       widget.onChange([...images, image]);
     },
     [widget, images],
+  );
+
+  const onFinishUpload = useCallback(
+    ({ signedUrl, filename }) => {
+      const [url] = signedUrl.split('?');
+      const splittedName = filename.split('_');
+      const image = {
+        url,
+        alt: splittedName[splittedName.length - 1],
+      };
+      changeImage(image);
+      addImage((v) => [...v, image]);
+    },
+    [changeImage],
   );
 
   const context = useContext(EnvironmentContext);
@@ -233,9 +249,21 @@ function EditProduct(props) {
             )}
           </div>
           <div className="col-6">
+            <ReactS3Uploader
+              signingUrl="/s3/sign"
+              signingUrlMethod="GET"
+              accept="image/*"
+              s3path={`${clientId}/`}
+              onFinish={onFinishUpload}
+              uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
+              contentDisposition="auto"
+              server={context.apiServer}
+              autoUpload={true}
+            />
+
             {hasImages && (
               <div>
-                {images.map((v) => {
+                {[...images, ...newImages].map((v) => {
                   return <img width="200px" className="pr-2 pb-4" src={v.url} alt={v.alt} key={v.url} />;
                 })}
                 <p>
@@ -245,13 +273,6 @@ function EditProduct(props) {
                 </p>
               </div>
             )}
-            <Widget
-              onChange={changeImage}
-              previewStep={true}
-              locale="ru"
-              tabs="file"
-              publicKey={context.uploadCarePublicKey}
-            ></Widget>
 
             <p className="mt-3">Наступні поля потрібні для конструктора динамічних сайтів:</p>
 

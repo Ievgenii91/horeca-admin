@@ -1,9 +1,9 @@
 import React from 'react';
 export const envVars = {
-  uploadCarePublicKey: '6f6c60b9958aca9bb717',
-  authDomain: 'dev-jjc0qxdi.eu.auth0.com',
+  authDomain: 'dev-jjc0qxdi.eu.auth0.com', // TODO think to use own auth
   authClientId: 'NJsxplAtp8J6oTiSjtrWhpo1VIr7GiGZ',
   authAudience: 'https://bilyynalyv.herokuapp.com/permissions',
+  s3: 'https://horeca-bucket.s3.eu-central-1.amazonaws.com',
   apiServer: 'https://nestbn.herokuapp.com'
   // apiServer: 'http://localhost:8080'
 };
