@@ -1,17 +1,24 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Form from 'react-bootstrap/Form';
+import ProgressBar from 'react-bootstrap/ProgressBar';
+import Button from 'react-bootstrap/Button';
+import Carousel from 'react-bootstrap/Carousel';
 import { useController, useForm } from 'react-hook-form';
+import ReactS3Uploader from 'react-s3-uploader';
 import MultiSelect from 'react-multi-select-component';
 import Select from 'react-select';
+import { deleteImage } from '../stores/client/clientActions';
+
 import { EnvironmentContext } from '../context';
-import { Button } from 'react-bootstrap';
-import ReactS3Uploader from 'react-s3-uploader';
+import { useGetToken } from '../hooks/get-token';
 
 function EditProduct(props) {
   const {
     clientId,
     product: {
+      id,
       name,
       description,
       price,
@@ -33,8 +40,16 @@ function EditProduct(props) {
     submit,
   } = props;
 
+  let token = useGetToken();
   const [newImages, addImage] = useState([]);
-  const hasImages = !!(images && images.length) || newImages.length;
+  const [progress, updateProgress] = useState(0);
+  const dispatch = useDispatch();
+  const showProgress = !!(progress !== 0 && progress !== 100);
+  const hasImages = !!((images && images.length) || newImages.length);
+
+  useEffect(() => {
+    addImage((v) => [...v, ...images]);
+  }, [images]);
 
   const usedCrossSales = useCallback(() => {
     return availableCrossSales.filter((v) => (crossSales ?? []).includes(v.value));
@@ -114,19 +129,36 @@ function EditProduct(props) {
     defaultValue: usedCrossSales(),
   });
 
-  const removeImages = useCallback(() => {
-    widget.onChange([]);
-  }, [widget]);
+  const removeImage = useCallback(
+    (image) => {
+      dispatch(
+        deleteImage(
+          image.key,
+          {
+            id,
+            clientId,
+          },
+          token,
+        ),
+        );
+        const data = [...newImages.filter((v) => v.key !== image.key)];
+        addImage(data);
+        widget.onChange(data);
+    },
+    [widget, newImages, dispatch, token, id, clientId],
+  );
 
   const changeImage = useCallback(
     (data) => {
       const image = {
         ...data,
-        isDefault: !!!images.length,
+        isDefault: !!!newImages.length,
       };
-      widget.onChange([...images, image]);
+      // TODO sync
+      widget.onChange([...newImages, image]);
+      addImage((v) => [...v, image]);
     },
-    [widget, images],
+    [widget, newImages],
   );
 
   const onFinishUpload = useCallback(
@@ -136,12 +168,14 @@ function EditProduct(props) {
       const image = {
         url,
         alt: splittedName[splittedName.length - 1],
+        key: filename,
       };
       changeImage(image);
-      addImage((v) => [...v, image]);
     },
     [changeImage],
   );
+
+  const onProgress = useCallback(updateProgress, [updateProgress]);
 
   const context = useContext(EnvironmentContext);
 
@@ -156,137 +190,164 @@ function EditProduct(props) {
   };
 
   return (
-    <>
-      <Form noValidate onSubmit={handleSubmit(submit)} id="product-form">
-        <div className="row">
-          <div className="col-6">
-            <Form.Group className="mb-3">
-              <Form.Control
-                {...register('name', { required: true })}
-                placeholder="Назва продукту"
-                isInvalid={hasError('name')}
-              />
-              <Form.Control.Feedback type="invalid">Назва обов'язкове поле</Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control
-                {...register('price', { required: true })}
-                placeholder="Ціна у гривнях"
-                isInvalid={hasError('price')}
-              />
-              <Form.Control.Feedback type="invalid">Ціна обов'язкове поле</Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control {...register('fancyName')} placeholder="Назва в онлайн меню" />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control type="textarea" {...register('description')} placeholder="Опис" />
-            </Form.Group>
+    <Form noValidate onSubmit={handleSubmit(submit)} id="product-form">
+      <div className="row">
+        <div className="col-6">
+          <Form.Group className="mb-3">
+            <Form.Control
+              {...register('name', { required: true })}
+              placeholder="Назва продукту"
+              isInvalid={hasError('name')}
+            />
+            <Form.Control.Feedback type="invalid">Назва обов'язкове поле</Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Control
+              {...register('price', { required: true })}
+              placeholder="Ціна у гривнях"
+              isInvalid={hasError('price')}
+            />
+            <Form.Control.Feedback type="invalid">Ціна обов'язкове поле</Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Control {...register('fancyName')} placeholder="Назва в онлайн меню" />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Control type="textarea" {...register('description')} placeholder="Опис" />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Select
+              {...select}
+              options={categories.map((v) => ({
+                value: v.entityId,
+                label: v.name,
+              }))}
+              placeholder="Категорія"
+            ></Select>
+          </Form.Group>
+
+          {showSubCategories && (
             <Form.Group className="mb-3">
               <Select
-                {...select}
-                options={categories.map((v) => ({
-                  value: v.entityId,
-                  label: v.name,
+                {...selectSub}
+                options={filteredSubCategories.map(({ value }) => ({
+                  value,
+                  label: value,
                 }))}
-                placeholder="Категорія"
+                placeholder="Підкатегорія"
               ></Select>
             </Form.Group>
+          )}
+          <Form.Group className="mb-3">
+            <Form.Control type="textarea" {...register('additionalText')} placeholder="Додатковий текст" />
+          </Form.Group>
 
-            {showSubCategories && (
-              <Form.Group className="mb-3">
-                <Select
-                  {...selectSub}
-                  options={filteredSubCategories.map(({ value }) => ({
-                    value,
-                    label: value,
-                  }))}
-                  placeholder="Підкатегорія"
-                ></Select>
-              </Form.Group>
-            )}
-            <Form.Group className="mb-3">
-              <Form.Control type="textarea" {...register('additionalText')} placeholder="Додатковий текст" />
-            </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Check {...register('type')} type="checkbox" label="Бар" defaultChecked={type === 'bar'} />
+          </Form.Group>
 
-            <Form.Group className="mb-3">
-              <Form.Check {...register('type')} type="checkbox" label="Бар" defaultChecked={type === 'bar'} />
-            </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Check {...register('available')} label="У наявності" defaultChecked={available} />
+          </Form.Group>
 
-            <Form.Group className="mb-3">
-              <Form.Check {...register('available')} label="У наявності" defaultChecked={available} />
-            </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Check
+              {...register('forCrossSales')}
+              label="Використовується як доп продаж?"
+              onChange={() => {
+                setForCrossSales(!forCrossSales);
+              }}
+              defaultChecked={forCrossSales || false}
+            />
+          </Form.Group>
 
+          {!forCrossSales && (
             <Form.Group className="mb-3">
-              <Form.Check
-                {...register('forCrossSales')}
-                label="Використовується як доп продаж?"
-                onChange={() => {
-                  setForCrossSales(!forCrossSales);
+              <Form.Label>Оберіть апсейл</Form.Label>
+              <MultiSelect
+                {...input}
+                overrideStrings={{
+                  'selectSomeItems': 'Обрати...',
+                  'allItemsAreSelected': 'Всі дані вибрані.',
+                  'selectAll': 'Вибрати все',
+                  'search': 'Пошук',
+                  'clearSearch': 'Очистити пошук',
                 }}
-                defaultChecked={forCrossSales || false}
+                disabled={forCrossSales}
+                options={availableCrossSales}
+                selectAllLabel={'Вибрати все'}
+                labelledBy={'Виберіть допи'}
               />
             </Form.Group>
-
-            {!forCrossSales && (
-              <Form.Group className="mb-3">
-                <Form.Label>Оберіть апсейл</Form.Label>
-                <MultiSelect
-                  {...input}
-                  overrideStrings={{
-                    'selectSomeItems': 'Обрати...',
-                    'allItemsAreSelected': 'Всі дані вибрані.',
-                    'selectAll': 'Вибрати все',
-                    'search': 'Пошук',
-                    'clearSearch': 'Очистити пошук',
-                  }}
-                  disabled={forCrossSales}
-                  options={availableCrossSales}
-                  selectAllLabel={'Вибрати все'}
-                  labelledBy={'Виберіть допи'}
-                />
-              </Form.Group>
-            )}
-          </div>
-          <div className="col-6">
-            <ReactS3Uploader
-              signingUrl="/s3/sign"
-              signingUrlMethod="GET"
-              accept="image/*"
-              s3path={`${clientId}/`}
-              onFinish={onFinishUpload}
-              uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
-              contentDisposition="auto"
-              server={context.apiServer}
-              autoUpload={true}
-            />
-
-            {hasImages && (
-              <div>
-                {[...images, ...newImages].map((v) => {
-                  return <img width="200px" className="pr-2 pb-4" src={v.url} alt={v.alt} key={v.url} />;
-                })}
-                <p>
-                  <Button variant="outline-danger" size="sm" onClick={removeImages}>
-                    Видалити все
-                  </Button>
-                </p>
-              </div>
-            )}
-
-            <p className="mt-3">Наступні поля потрібні для конструктора динамічних сайтів:</p>
-
-            <Form.Group className="mb-3">
-              <Form.Control {...register('slug')} placeholder="Назва сторінки або slug" />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Control {...register('path')} placeholder="Шлях до продукту" />
-            </Form.Group>
-          </div>
+          )}
         </div>
-      </Form>
-    </>
+        <div className="col-6">
+          {showProgress && <ProgressBar now={progress} className="mb-4" />}
+          <ReactS3Uploader
+            className="btn btn-primary"
+            signingUrl="/s3/sign"
+            signingUrlMethod="GET"
+            accept="image/*"
+            s3path={`${clientId}/`}
+            preprocess={(file, next) => {
+              next(file);
+            }}
+            onFinish={onFinishUpload}
+            onProgress={onProgress}
+            uploadRequestHeaders={{ 'x-amz-acl': 'public-read' }} // this is the default
+            contentDisposition="auto"
+            server={context.apiServer}
+            autoUpload={true}
+          />
+
+          {hasImages && (
+            <>
+              <Carousel>
+                {newImages.map((v) => {
+                  return (
+                    <Carousel.Item key={v.url}>
+                      <img width="100%" className="pr-2 pb-4" src={v.url} alt={v.alt} />
+                      <Carousel.Caption>
+                        <h5>{v.alt}</h5>
+                      </Carousel.Caption>
+                    </Carousel.Item>
+                  );
+                })}
+              </Carousel>
+              <div>
+                {newImages.map((v, index) => {
+                  return (
+                    <p key={v.alt + index}>
+                      {v.alt}
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        className="ml-3"
+                        onClick={() => {
+                          removeImage(v);
+                        }}
+                      >
+                        Видалити
+                      </Button>
+                    </p>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          <p className="mt-3">Наступні поля потрібні для конструктора динамічних сайтів:</p>
+
+          <Form.Group className="mb-3">
+            <Form.Control {...register('slug')} placeholder="Назва сторінки або slug" />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Control {...register('path')} placeholder="Шлях до продукту" />
+          </Form.Group>
+        </div>
+      </div>
+    </Form>
   );
 }
 

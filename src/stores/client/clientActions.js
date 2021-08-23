@@ -269,6 +269,17 @@ export const deleteCategory = (clientId, data, token) => {
   };
 };
 
+export const deleteImage = (key, body, token) => {
+  return async (dispatch) => {
+    try {
+      await http.post(`${apis.images}?key=${key}`, body, token);
+    } catch (e) {
+      dispatch(getCategoriesFail());
+    }
+  };
+};
+
+
 export const getVisitsSuccess = (visits) => ({
   type: GET_VISITS_SUCCESS,
   payload: visits,

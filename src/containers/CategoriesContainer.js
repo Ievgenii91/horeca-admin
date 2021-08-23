@@ -5,7 +5,7 @@ import { useGetToken } from '../hooks/get-token';
 import http from '../services/http';
 import { getCategories as fetchCategories, updateCategory, deleteCategory } from '../stores/client/clientActions';
 import { getCategories, getClientId } from '../stores/client/clientSelectors';
-import { FaTrash, FaEdit } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa';
 import AddEditCategoryModal from '../components/AddEditCategoryModal';
 import { apis } from '../constants/api-routes';
 
