@@ -7,9 +7,10 @@ import Button from 'react-bootstrap/Button';
 import Carousel from 'react-bootstrap/Carousel';
 import { useController, useForm } from 'react-hook-form';
 import ReactS3Uploader from 'react-s3-uploader';
-import MultiSelect from 'react-multi-select-component';
+// import MultiSelect from 'react-multi-select-component';
 import Select from 'react-select';
 import { deleteImage } from '../stores/client/clientActions';
+// import { withContext as ReactTags } from 'react-tag-input';
 
 import { EnvironmentContext } from '../context';
 import { useGetToken } from '../hooks/get-token';
@@ -31,8 +32,11 @@ function EditProduct(props) {
       crossSales,
       usedForCrossSales,
       slug,
-      path,
       images,
+      weight,
+      capacity,
+      order,
+      tags,
     },
     categories = [],
     subCategories = [],
@@ -51,9 +55,9 @@ function EditProduct(props) {
     addImage((v) => [...v, ...images]);
   }, [images]);
 
-  const usedCrossSales = useCallback(() => {
-    return availableCrossSales.filter((v) => (crossSales ?? []).includes(v.value));
-  }, [availableCrossSales, crossSales]);
+  // const usedCrossSales = useCallback(() => {
+  //   return availableCrossSales.filter((v) => (crossSales ?? []).includes(v.value));
+  // }, [availableCrossSales, crossSales]);
 
   const {
     register,
@@ -68,7 +72,10 @@ function EditProduct(props) {
       fancyName,
       additionalText,
       slug,
-      path,
+      weight,
+      capacity,
+      order,
+      tags,
     },
   });
 
@@ -120,14 +127,14 @@ function EditProduct(props) {
     control,
     shouldUnregister: true,
   });
-  const {
-    field: { ref, ...input },
-  } = useController({
-    name: 'selectedCrossSales',
-    control,
-    shouldUnregister: true,
-    defaultValue: usedCrossSales(),
-  });
+  // const {
+  //   field: { ref, ...input },
+  // } = useController({
+  //   name: 'selectedCrossSales',
+  //   control,
+  //   shouldUnregister: true,
+  //   defaultValue: usedCrossSales(),
+  // });
 
   const removeImage = useCallback(
     (image) => {
@@ -140,10 +147,10 @@ function EditProduct(props) {
           },
           token,
         ),
-        );
-        const data = [...newImages.filter((v) => v.key !== image.key)];
-        addImage(data);
-        widget.onChange(data);
+      );
+      const data = [...newImages.filter((v) => v.key !== image.key)];
+      addImage(data);
+      widget.onChange(data);
     },
     [widget, newImages, dispatch, token, id, clientId],
   );
@@ -179,11 +186,13 @@ function EditProduct(props) {
 
   const context = useContext(EnvironmentContext);
 
-  const [forCrossSales, setForCrossSales] = useState(null);
+  // const [forCrossSales, setForCrossSales] = useState(null);
 
-  useEffect(() => {
-    setForCrossSales(usedForCrossSales);
-  }, [usedForCrossSales, crossSales, availableCrossSales, usedCrossSales]);
+  const [isBar, setIsBar] = useState(type === 'bar');
+
+  // useEffect(() => {
+  //   setForCrossSales(usedForCrossSales);
+  // }, [usedForCrossSales, crossSales, availableCrossSales, usedCrossSales]);
 
   const hasError = (field) => {
     return touchedFields[field] && errors[field];
@@ -209,9 +218,9 @@ function EditProduct(props) {
             />
             <Form.Control.Feedback type="invalid">Ціна обов'язкове поле</Form.Control.Feedback>
           </Form.Group>
-          <Form.Group className="mb-3">
+          {/* <Form.Group className="mb-3">
             <Form.Control {...register('fancyName')} placeholder="Назва в онлайн меню" />
-          </Form.Group>
+          </Form.Group> */}
           <Form.Group className="mb-3">
             <Form.Control type="textarea" {...register('description')} placeholder="Опис" />
           </Form.Group>
@@ -243,14 +252,34 @@ function EditProduct(props) {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Check {...register('type')} type="checkbox" label="Бар" defaultChecked={type === 'bar'} />
+            <Form.Check
+              {...register('type')}
+              type="checkbox"
+              label="Бар"
+              onChange={() => {
+                setIsBar(!isBar);
+              }}
+              defaultChecked={isBar}
+            />
           </Form.Group>
+
+          {isBar && (
+            <Form.Group className="mb-3">
+              <Form.Control type="number" {...register('capacity')} placeholder="Мілілітри" />
+            </Form.Group>
+          )}
+
+          {!isBar && (
+            <Form.Group className="mb-3">
+              <Form.Control type="number" {...register('weight')} placeholder="Вага" />
+            </Form.Group>
+          )}
 
           <Form.Group className="mb-3">
             <Form.Check {...register('available')} label="У наявності" defaultChecked={available} />
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          {/* <Form.Group className="mb-3">
             <Form.Check
               {...register('forCrossSales')}
               label="Використовується як доп продаж?"
@@ -279,7 +308,7 @@ function EditProduct(props) {
                 labelledBy={'Виберіть допи'}
               />
             </Form.Group>
-          )}
+              )} */}
         </div>
         <div className="col-6">
           {showProgress && <ProgressBar now={progress} className="mb-4" />}
@@ -342,9 +371,14 @@ function EditProduct(props) {
             <Form.Control {...register('slug')} placeholder="Назва сторінки або slug" />
           </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Control {...register('path')} placeholder="Шлях до продукту" />
+          {/* <Form.Group className="mb-3">
+            <ReactTags tags={tags.map(v => ({ id: v, text: v}))} />
           </Form.Group>
+           */}
+
+          {/* <Form.Group className="mb-3">
+            <Form.Control {...register('path')} placeholder="Шлях до продукту" />
+          </Form.Group> */}
         </div>
       </div>
     </Form>

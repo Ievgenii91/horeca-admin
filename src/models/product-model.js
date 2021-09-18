@@ -19,7 +19,8 @@ export default class ProductModel {
     this.slug = data.slug || '';
     this.tags = data.tags || [];
     this.weight = data.weight || null;
-    this.path = data.path || '';
+    this.path = data.path || null;
+    this.capacity = data.capacity || null;
   }
 }
 
@@ -30,6 +31,12 @@ ProductModel.transformModel = (input) => {
   data.subCategory = data.subCategory ? data.subCategory.value : '';
   data.crossSales = data.selectedCrossSales ? data.selectedCrossSales.map((v) => v.value) : [];
   data.usedForCrossSales = data.forCrossSales;
+  if (data.slug) {
+    data.path = '/' + data.slug;
+  }
+  if (!data.fancyNae) {
+    data.fancyName = data.name;
+  }
   delete data.selectedCrossSales;
   delete data.forCrossSales;
   return data;
