@@ -12,11 +12,15 @@ export default function ProductTableRows(props) {
     category,
     removeClientProduct,
     showEditModal,
-    fancyName,
+    visible,
     images,
     categories,
+    tags,
+    weight,
+    capacity
   } = props;
   const hasImage = !!(images && images.length);
+  const hasSizes = capacity || weight;
   return (
     <tr>
       <td className="p-1 pr-3 pl-3">
@@ -31,7 +35,9 @@ export default function ProductTableRows(props) {
           {name}
         </button>
       </td>
-      <td className="p-1 pr-3 pl-3">{fancyName}</td>
+      <td className="p-1 pr-3 pl-3">
+        {visible ? <FaRegCheckCircle className="text-success" /> : <FaRegTimesCircle className="text-danger" />}
+      </td>
       <td className="p-1 pr-3 pl-3">
         {hasImage && <FaRegCheckCircle className="text-success" />}
         {!hasImage && <FaRegDizzy className="text-danger" />}{' '}
@@ -45,6 +51,8 @@ export default function ProductTableRows(props) {
         </span>
       </td>
       <td className="p-1 pr-3 pl-3">{categories.find((v) => v.entityId === category)?.name}</td>
+      <td className="p-1 pr-3 pl-3">{tags}</td>
+      <td className="p-1 pr-3 pl-3">{weight || capacity} { hasSizes ? (weight ? 'мг' : 'мл') : '' }</td>
       <td className="p-1 pr-3 pl-3">
         <FaTrash
           className="text-info"

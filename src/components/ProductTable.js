@@ -28,7 +28,7 @@ export default function ProductTable({ products, categories, showEditModal, remo
                 Назва{' '}
                 {nameSortedAsc ? <FaAngleDown onClick={changeSortName} /> : <FaAngleUp onClick={changeSortName} />}
               </th>
-              <th>Fancy назва</th>
+              <th>Показувати на сайті</th>
               <th>фото?</th>
               <th>
                 Ціна ₴{' '}
@@ -37,11 +37,14 @@ export default function ProductTable({ products, categories, showEditModal, remo
               <th>Опис</th>
               <th className="text-center">Наявність/Бар</th>
               <th>Категорія</th>
+              <th>Теги</th>
+              <th>Вага/Об'єм</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {products
+              .filter(v => v.visibleInUI)
               .map((v, index) => (
                 <ProductTableRows
                   categories={categories}

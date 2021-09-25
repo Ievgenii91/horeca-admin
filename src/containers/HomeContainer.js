@@ -18,7 +18,7 @@ import AddEditProductModal from '../components/AddEditProductModal';
 
 import { useGetToken } from '../hooks/get-token';
 
-function SettingsContainer({
+function HomeContainer({
   products,
   categories,
   subCategories,
@@ -113,7 +113,7 @@ function SettingsContainer({
   );
 }
 
-SettingsContainer.defaultProps = {
+HomeContainer.defaultProps = {
   products: [],
   categories: [],
 }
@@ -134,4 +134,4 @@ export default connect(
     filterByName,
     sort,
   },
-)(SettingsContainer);
+)(HomeContainer);

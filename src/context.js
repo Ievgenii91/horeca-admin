@@ -4,8 +4,8 @@ export const envVars = {
   authClientId: 'NJsxplAtp8J6oTiSjtrWhpo1VIr7GiGZ',
   authAudience: 'https://bilyynalyv.herokuapp.com/permissions',
   s3: 'https://horeca-bucket.s3.eu-central-1.amazonaws.com',
-  apiServer: 'https://nestbn.herokuapp.com'
-  // apiServer: 'http://localhost:8080'
+  // apiServer: 'https://nestbn.herokuapp.com'
+  apiServer: 'http://localhost:8080'
 };
 window.config = envVars;
 export const EnvironmentContext = React.createContext(envVars);
