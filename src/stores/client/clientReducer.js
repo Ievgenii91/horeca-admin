@@ -84,11 +84,12 @@ export default function clientReducer(state = initialOrders, action) {
     }
 
     case GET_PRODUCTS_SUCCESS: {
-      let products = action.payload.map((v) => ({ ...v, visible: true }));
+      // let products = action.payload.map((v) => ({ ...v, visible: true }));
+      // TODO: fix search
       return {
         ...state,
-        products,
-        allProducts: products,
+        products: action.payload,
+        allProducts: action.payload,
       };
     }
 

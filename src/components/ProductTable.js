@@ -42,7 +42,6 @@ export default function ProductTable({ products, categories, showEditModal, remo
           </thead>
           <tbody>
             {products
-              .filter((v) => v.visible)
               .map((v, index) => (
                 <ProductTableRows
                   categories={categories}

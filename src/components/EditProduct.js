@@ -37,6 +37,8 @@ function EditProduct(props) {
       capacity,
       order,
       tags,
+      rating,
+      visible,
     },
     categories = [],
     subCategories = [],
@@ -76,6 +78,8 @@ function EditProduct(props) {
       capacity,
       order,
       tags,
+      rating,
+      visible,
     },
   });
 
@@ -252,6 +256,10 @@ function EditProduct(props) {
           </Form.Group>
 
           <Form.Group className="mb-3">
+            <Form.Check {...register('visible')} type="checkbox" label="Видимий на сайті ?" />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
             <Form.Check
               {...register('type')}
               type="checkbox"
@@ -369,6 +377,14 @@ function EditProduct(props) {
 
           <Form.Group className="mb-3">
             <Form.Control {...register('slug')} placeholder="Назва сторінки або slug" />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Control {...register('tags')} placeholder="Теги для пошуку" />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Control type="number" {...register('rating')} placeholder="Рейтинг" />
           </Form.Group>
 
           {/* <Form.Group className="mb-3">

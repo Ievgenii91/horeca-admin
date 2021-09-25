@@ -13,7 +13,7 @@ export default class ProductModel {
     this.available = data.available || true;
     this.editMode = true;
     this.crossSales = data.crossSales || [];
-    this.visible = data.visible || true;
+    this.visible = !!data.visible;
     this.usedForCrossSales = data.usedForCrossSales || false; // TODO name
     this.images = data.images || [];
     this.slug = data.slug || '';
