@@ -1,3 +1,5 @@
+import { slugify } from 'transliteration';
+
 export default class ProductModel {
   constructor(data = {}) {
     this.clientId = data.clientId || null;
@@ -31,6 +33,7 @@ ProductModel.transformModel = (input) => {
   data.subCategory = data.subCategory ? data.subCategory.value : '';
   data.crossSales = data.selectedCrossSales ? data.selectedCrossSales.map((v) => v.value) : [];
   data.usedForCrossSales = data.forCrossSales;
+  data.slug = slugify(data.name);
   if (data.slug) {
     data.path = '/' + data.slug;
   }

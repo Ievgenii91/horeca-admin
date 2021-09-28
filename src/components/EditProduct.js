@@ -14,6 +14,7 @@ import { deleteImage } from '../stores/client/clientActions';
 
 import { EnvironmentContext } from '../context';
 import { useGetToken } from '../hooks/get-token';
+import { slugify } from 'transliteration';
 
 function EditProduct(props) {
   const {
@@ -31,7 +32,6 @@ function EditProduct(props) {
       type,
       crossSales,
       usedForCrossSales,
-      slug,
       images,
       weight,
       capacity,
@@ -49,6 +49,8 @@ function EditProduct(props) {
   let token = useGetToken();
   const [newImages, addImage] = useState([]);
   const [progress, updateProgress] = useState(0);
+  const [slug, setSlug] = useState(() => slugify(name));
+
   const dispatch = useDispatch();
   const showProgress = !!(progress !== 0 && progress !== 100);
   const hasImages = !!((images && images.length) || newImages.length);
@@ -73,7 +75,6 @@ function EditProduct(props) {
       price,
       fancyName,
       additionalText,
-      slug,
       weight,
       capacity,
       order,
@@ -210,6 +211,7 @@ function EditProduct(props) {
             <Form.Control
               {...register('name', { required: true })}
               placeholder="Назва продукту"
+              onChange={(e) => setSlug(slugify(e.target.value))}
               isInvalid={hasError('name')}
             />
             <Form.Control.Feedback type="invalid">Назва обов'язкове поле</Form.Control.Feedback>
@@ -343,7 +345,7 @@ function EditProduct(props) {
                 {newImages.map((v) => {
                   return (
                     <Carousel.Item key={v.url}>
-                      <img width="100%" className="pr-2 pb-4" src={v.url} alt={v.alt} />
+                      <img height={300} className="pr-2 pb-4" src={v.url} alt={v.alt} />
                       <Carousel.Caption>
                         <h5>{v.alt}</h5>
                       </Carousel.Caption>
@@ -373,12 +375,6 @@ function EditProduct(props) {
             </>
           )}
 
-          <p className="mt-3">Наступні поля потрібні для конструктора динамічних сайтів:</p>
-
-          <Form.Group className="mb-3">
-            <Form.Control {...register('slug')} placeholder="Назва сторінки або slug" />
-          </Form.Group>
-
           <Form.Group className="mb-3">
             <Form.Control {...register('tags')} placeholder="Теги для пошуку" />
           </Form.Group>
@@ -387,14 +383,14 @@ function EditProduct(props) {
             <Form.Control type="number" {...register('rating')} placeholder="Рейтинг" />
           </Form.Group>
 
+          <Form.Group className="mb-3">
+            <Form.Control label="Slug:" type="text" disabled value={slug} />
+          </Form.Group>
+
           {/* <Form.Group className="mb-3">
             <ReactTags tags={tags.map(v => ({ id: v, text: v}))} />
           </Form.Group>
            */}
-
-          {/* <Form.Group className="mb-3">
-            <Form.Control {...register('path')} placeholder="Шлях до продукту" />
-          </Form.Group> */}
         </div>
       </div>
     </Form>
