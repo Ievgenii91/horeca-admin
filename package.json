@@ -16,7 +16,6 @@
 		"react-dnd": "^14.0.3",
 		"react-dnd-html5-backend": "^14.0.1",
 		"react-dom": "^17.0.2",
-		"react-ga": "^3.3.0",
 		"react-hook-form": "^7.2.1",
 		"react-icons": "^3.11.0",
 		"react-multi-select-component": "^4.0.1",
