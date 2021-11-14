@@ -5,4 +5,5 @@ export const apis = {
   texts: '/texts',
   visits: '/visits',
   categories: '/categories',
+  employees: '/employees',
 };
