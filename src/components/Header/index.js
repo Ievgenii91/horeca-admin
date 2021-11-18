@@ -14,21 +14,21 @@ export default function Header({ hide }) {
                 <FaWarehouse size={24} />
               </Link>
             </div>
-            <div className="nav-item m-3">
+            {/* <div className="nav-item m-3">
               <Link to="/orders">
                 <FaListOl size={24} />
               </Link>
-            </div>
+            </div> */}
             <div className="nav-item m-3">
               <Link to="/categories">
                 <FaLayerGroup size={24} />
               </Link>
             </div>
-            <div className="nav-item m-3">
+            {/* <div className="nav-item m-3">
               <Link to="/stats">
                 <FaChartBar size={24} />
               </Link>
-            </div>
+            </div> */}
             <div className="nav-item m-3">
               <Link to="/users">
                 <FaUsers size={24} />

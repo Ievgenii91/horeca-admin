@@ -1,179 +1,118 @@
 import React, { useState, useEffect } from 'react';
-import Table from 'react-bootstrap/Table';
+import { useGetToken } from '../hooks/get-token';
+import { useSelector } from 'react-redux';
+import { getClientId } from '../stores/client/clientSelectors';
 import http from '../services/http';
 import { apis } from '../constants/api-routes';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import { FaTrash, FaEdit } from 'react-icons/fa';
-import Form from 'react-bootstrap/Form';
+import Table from 'react-bootstrap/Table';
+import DatePicker from 'react-datepicker';
+
+function diffInHours(dt2, dt1) {
+  let diff = (new Date(dt2).getTime() - new Date(dt1).getTime()) / 1000;
+  diff /= 60;
+  const df = Math.abs(Math.round(diff));
+
+  return parseFloat(df / 60);
+}
 
 function TimeTrackingContainer() {
-  const [employees, setEmployees] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  let token = useGetToken();
+  const clientId = useSelector(getClientId);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [tt, setTT] = useState([]);
+  const [total, setTotal] = useState(0);
   const [error, setError] = useState(null);
-  const [show, setShow] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const { data } = await http.get(apis.employees);
-        setEmployees(data);
+        const { data } = await http.get(
+          apis.timetracking,
+          { clientId, startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+          token,
+        );
+        let all = 0;
+        const transformedData = data.reduce((prev, current) => {
+          const hoursWorked = diffInHours(current.startDate, current.endDate);
+          const user = prev.find((v) => v.employeeId === current.employeeId);
+          if (user) {
+            user.hours = user.hours + hoursWorked;
+            const addition = parseFloat(hoursWorked * current.ratePerHour);
+            user.total = parseFloat(user.total) + addition;
+            all += addition;
+            user.records.push({
+              endDate: current.endDate,
+              startDate: current.startDate,
+              ratePerHour: current.ratePerHour,
+            });
+            return prev;
+          }
+          all += parseFloat(hoursWorked * current.ratePerHour);
+          return [
+            ...prev,
+            {
+              ...current,
+              records: [
+                {
+                  endDate: current.endDate,
+                  startDate: current.startDate,
+                  ratePerHour: current.ratePerHour,
+                },
+              ],
+              hours: hoursWorked,
+              total: parseFloat(hoursWorked * current.ratePerHour),
+            },
+          ];
+        }, []);
+        setTotal(all);
+        setTT(transformedData);
       } catch (e) {
         setError(e);
       }
     }
     fetchData();
-  }, []);
-
-  const handleClose = () => {
-    setShow(false);
-  };
-
-  const edit = (v) => {
-    setSelectedEmployee(v);
-    setShow(true);
-  };
-
-  const save = async () => {
-    try {
-      if (selectedEmployee._id) {
-        await http.patch(apis.employees + '/' + selectedEmployee._id, selectedEmployee);
-      } else {
-        await http.post(apis.employees, selectedEmployee);
-      }
-      const { data } = await http.get(apis.employees);
-      setEmployees(data);
-      handleClose();
-      setSelectedEmployee(null);
-    } catch (e) {}
-  };
-
-  const remove = async ({ _id }) => {
-    try {
-      await http.delete(apis.employees + '/' + _id);
-      const { data } = await http.get(apis.employees);
-      setEmployees(data);
-    } catch (e) {}
-  };
-
-  const setEmployee = (data, prop) => {
-    setSelectedEmployee((v) => {
-      return {
-        ...v,
-        [prop]: data,
-      };
-    });
-  };
-
+  }, [token, clientId, startDate, endDate]);
   return (
     <div className="container-fluid">
       <div className="row">
         <div className="col">
           <h4>Таймтрекінг</h4>
-          <div className="row m-2">
-            <Button
-              variant="primary"
-              onClick={() => {
-                setSelectedEmployee({
-                  name: '',
-                  password: '',
-                  ratePerHour: '',
-                });
-                setShow(true);
-              }}
-            >
-              Додати працівника
-            </Button>
-          </div>
-
+          <p>
+            Від <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+            До <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} />
+          </p>
           <Table className="table-list">
             <thead>
               <tr>
                 <th>Ім'я</th>
-                <th>Дата</th>
-                <th>Стартував</th>
-                <th>Ставка за годину</th>
-                <th></th>
+                <th>Кількість годин</th>
+                <th>Нарахування</th>
               </tr>
             </thead>
             <tbody>
-              {employees.map((v) => {
+              {tt.map(({ employeeName, employeeId, hours, total }) => {
                 return (
-                  <tr key={v.name}>
-                    <td>{v.name}</td>
-                    <td>{v.date}</td>
-                    <td>{v.started}</td>
-                    <td>{v.ratePerHour}</td>
-                    <td>
-                      <FaTrash
-                        size={24}
-                        className="text-info"
-                        onClick={() => {
-                          remove(v);
-                        }}
-                      />
-                      <FaEdit
-                        size={24}
-                        onClick={() => {
-                          edit(v);
-                        }}
-                      />
-                    </td>
+                  <tr key={employeeId}>
+                    <td>{employeeName}</td>
+                    <td>{hours.toFixed(2)}</td>
+                    <td>{total.toFixed(2) + ' грн'}</td>
                   </tr>
                 );
               })}
             </tbody>
           </Table>
+          <p>
+            <b>Всього за період: {total}</b>
+          </p>
         </div>
       </div>
-
-      <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
-        <Modal.Header closeButton>
-          <Modal.Title>Редагування працівника</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="row">
-            <div className="col-6">
-              <Form.Group className="mb-3">
-                <Form.Control
-                  placeholder="Ім'я"
-                  onChange={(e) => setEmployee(e.target.value, 'name')}
-                  defaultValue={selectedEmployee?.name}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Control
-                  placeholder="Ставка за годину"
-                  type="number"
-                  onChange={(e) => setEmployee(e.target.value, 'ratePerHour')}
-                  defaultValue={selectedEmployee?.ratePerHour}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Control
-                  placeholder="Пароль"
-                  onChange={(e) => setEmployee(e.target.value, 'password')}
-                  defaultValue={selectedEmployee?.password}
-                />
-              </Form.Group>
-            </div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => handleClose()}>
-            Закрити
-          </Button>
-          <Button variant="primary" onClick={() => save()}>
-            Зберегти
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 }
 
 TimeTrackingContainer.defaultProps = {
-  employees: [],
+  tt: [],
 };
 
 export default TimeTrackingContainer;

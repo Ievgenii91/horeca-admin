@@ -6,4 +6,5 @@ export const apis = {
   visits: '/visits',
   categories: '/categories',
   employees: '/employees',
+  timetracking: '/timetracking',
 };
