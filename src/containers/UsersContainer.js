@@ -9,6 +9,7 @@ import Form from 'react-bootstrap/Form';
 import { useGetToken } from '../hooks/get-token';
 import { useSelector } from 'react-redux';
 import { getClientId } from '../stores/client/clientSelectors';
+import ConfirmModal from '../components/ConfirmModal';
 
 function UsersContainer() {
   let token = useGetToken();
@@ -17,6 +18,7 @@ function UsersContainer() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [error, setError] = useState(null);
   const [show, setShow] = useState(false);
+  const [employeeToRemove, setEmployeeToRemove] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -137,7 +139,7 @@ function UsersContainer() {
                         size={16}
                         className="text-info"
                         onClick={() => {
-                          remove(v);
+                          setEmployeeToRemove(v);
                         }}
                       />
                     </td>
@@ -206,6 +208,17 @@ function UsersContainer() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <ConfirmModal
+        visible={!!employeeToRemove}
+        onConfirm={() => {
+          remove(employeeToRemove);
+          setEmployeeToRemove(null);
+        }}
+        onCancel={() => {
+          setEmployeeToRemove(null);
+        }}
+      />
     </div>
   );
 }

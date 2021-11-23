@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
 import Wrapper from './auth/Wrapper';
 import { EnvironmentContext, envVars } from './context';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const onRedirectCallback = (appState) => {
   window.history.replaceState(
@@ -36,3 +37,5 @@ ReactDOM.render(
   </EnvironmentContext.Provider>,
   document.getElementById('root'),
 );
+
+serviceWorkerRegistration.register();
