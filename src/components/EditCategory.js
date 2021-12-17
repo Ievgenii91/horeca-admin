@@ -5,12 +5,14 @@ import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup'
 import { useForm } from 'react-hook-form';
 import { FaTrash } from 'react-icons/fa';
+
 function EditCategory(props) {
   const {
     data: {
       name,
       description,
       children,
+      classes,
     },
     submit,
   } = props;
@@ -29,6 +31,7 @@ function EditCategory(props) {
       name,
       description,
       children,
+      classes,
     },
   });
 
@@ -75,6 +78,13 @@ function EditCategory(props) {
               {...register('description')}
               placeholder="Опис"
               isInvalid={hasError('description')}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Control
+              {...register('classes')}
+              placeholder="CSS класи"
+              isInvalid={hasError('classes')}
             />
           </Form.Group>
           <Form.Group className="mb-3">

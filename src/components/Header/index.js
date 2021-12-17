@@ -29,7 +29,7 @@ export default function Header({ hide }) {
                 <FaChartBar size={24} />
               </Link>
             </div> */}
-            <div className="nav-item m-3">
+            {/* <div className="nav-item m-3">
               <Link to="/users">
                 <FaUsers size={24} />
               </Link>
@@ -38,7 +38,7 @@ export default function Header({ hide }) {
               <Link to="/timetracking">
                 <FaRegClock size={24} />
               </Link>
-            </div>
+            </div> */}
           </>
         )}
         <div className="nav-item m-3">
