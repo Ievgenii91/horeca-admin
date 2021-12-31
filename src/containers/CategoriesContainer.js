@@ -1,13 +1,11 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetToken } from '../hooks/get-token';
-import http from '../services/http';
-import { getCategories as fetchCategories, updateCategory, deleteCategory } from '../stores/client/clientActions';
+import { getCategories as fetchCategories, updateCategory, deleteCategory, addCategory } from '../stores/client/clientActions';
 import { getCategories, getClientId } from '../stores/client/clientSelectors';
 import { FaTrash } from 'react-icons/fa';
 import AddEditCategoryModal from '../components/AddEditCategoryModal';
-import { apis } from '../constants/api-routes';
 
 function CategoriesContainer() {
   let token = useGetToken();
@@ -16,25 +14,14 @@ function CategoriesContainer() {
   const categories = useSelector(getCategories);
   const clientId = useSelector(getClientId);
 
-  const [name, setName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [description, setDescription] = useState('');
+  const [isAddCategoryModalVisible, setAddCategoryModalVisible] = useState(false);
 
   useEffect(() => {
     if (clientId && token) {
-      dispatch(fetchCategories(clientId, token)); 
+      dispatch(fetchCategories(clientId, token));
     }
   }, [clientId, token, dispatch]);
-
-  // TODO refactor
-  const addCategory = useCallback(async () => {
-    try {
-      await http.post(apis.categories, { name, clientId, description });
-      setName('');
-      setDescription('');
-      dispatch(fetchCategories(clientId, token));
-    } catch (error) {}
-  }, [name, clientId, description, token, dispatch]);
 
   const edit = (model) => {
     setSelectedCategory(model);
@@ -46,7 +33,7 @@ function CategoriesContainer() {
 
   return (
     <div className="container-fluid">
-       <div className="row">
+      <div className="row">
         <div className="col">
           <h4>Категорії</h4>
         </div>
@@ -66,18 +53,33 @@ function CategoriesContainer() {
         />
       )}
 
+      {isAddCategoryModalVisible && (
+        <AddEditCategoryModal
+          edit={false}
+          visible={isAddCategoryModalVisible}
+          data={{
+            name: '',
+            description: '',
+            children: [],
+            classes: '',
+            order: 0,
+          }}
+          onConfirm={(data) => {
+            dispatch(addCategory(clientId, data, token));
+            setSelectedCategory(null);
+            setAddCategoryModalVisible(false);
+          }}
+          onCancel={() => {
+            setSelectedCategory(null);
+            setAddCategoryModalVisible(false);
+          }}
+        />
+      )}
+
       <div className="row mt-2">
         <div className="col-2">
-          <label>Назва</label>
-          <input defaultValue={name} onBlur={(e) => setName(e.target.value)} />
-        </div>
-        <div className="col-2">
-          <label>Опис</label>
-          <input defaultValue={description} onBlur={(e) => setDescription(e.target.value)} />
-        </div>
-        <div className="col-2">
-          <button type="text" className="btn btn-sm btn-primary" onClick={addCategory}>
-            + Додати
+          <button type="text" className="btn btn-primary" onClick={() => setAddCategoryModalVisible(true)}>
+            Додати категорію
           </button>
         </div>
       </div>
@@ -105,11 +107,11 @@ function CategoriesContainer() {
                         edit(v);
                       }}
                     >
-                    {v.name}
-                  </button>
+                      {v.name}
+                    </button>
                   </td>
                   <td>{v.description}</td>
-                  <td>{!!v.children.length && v.children.map(v => (<p key={v}>{v}</p>))}</td>
+                  <td>{!!v.children.length && v.children.map((v) => <p key={v}>{v}</p>)}</td>
                   <td>{v.entityId}</td>
                   <td className="text-info p-1 pr-3 pl-3">
                     <FaTrash onClick={() => remove(v)} />

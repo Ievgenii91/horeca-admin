@@ -247,6 +247,17 @@ export const getCategories = (clientId, token) => {
   };
 };
 
+export const addCategory = (clientId, data, token) => {
+  return async (dispatch) => {
+    try {
+      await http.post(apis.categories, { ...data, clientId }, token);
+      dispatch(getCategories(clientId, token));
+    } catch (e) {
+      dispatch(getCategoriesFail());
+    }
+  };
+};
+
 export const updateCategory = (clientId, data, token) => {
   return async (dispatch) => {
     try {

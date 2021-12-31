@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import EditCategory from './EditCategory';
 
-function ADdEditCategoryModal({ data, edit, visible, onConfirm, onCancel }) {
+function AddEditCategoryModal({ data, edit, visible, onConfirm, onCancel }) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -39,9 +39,9 @@ function ADdEditCategoryModal({ data, edit, visible, onConfirm, onCancel }) {
   );
 }
 
-ADdEditCategoryModal.propTypes = {
+AddEditCategoryModal.propTypes = {
   onConfirm: PropTypes.func,
   onCancel: PropTypes.func,
 };
 
-export default ADdEditCategoryModal;
+export default AddEditCategoryModal;

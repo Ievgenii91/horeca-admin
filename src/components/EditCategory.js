@@ -13,6 +13,7 @@ function EditCategory(props) {
       description,
       children,
       classes,
+      order,
     },
     submit,
   } = props;
@@ -32,6 +33,7 @@ function EditCategory(props) {
       description,
       children,
       classes,
+      order,
     },
   });
 
@@ -85,6 +87,14 @@ function EditCategory(props) {
               {...register('classes')}
               placeholder="CSS класи"
               isInvalid={hasError('classes')}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Control
+              {...register('order')}
+              type="number"
+              placeholder="Порядковий номер"
+              isInvalid={hasError('order')}
             />
           </Form.Group>
           <Form.Group className="mb-3">
