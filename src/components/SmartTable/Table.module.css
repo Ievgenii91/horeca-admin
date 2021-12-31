@@ -1,0 +1,14 @@
+table thead th.header {
+  text-align: left;
+  height: 40px;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  line-height: 18px;
+}
+
+.icon {
+  margin: 0 5px;
+}

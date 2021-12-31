@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import Table from 'react-bootstrap/Table';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetToken } from '../hooks/get-token';
 import {
@@ -12,6 +11,7 @@ import { getCategories, getClientId } from '../stores/client/clientSelectors';
 import { FaTrash } from 'react-icons/fa';
 import AddEditCategoryModal from '../components/AddEditCategoryModal';
 import ConfirmModal from '../components/ConfirmModal';
+import SmartTable from '../components/SmartTable/SmartTable';
 
 function CategoriesContainer() {
   let token = useGetToken();
@@ -63,6 +63,46 @@ function CategoriesContainer() {
     [clientId, token, dispatch],
   );
 
+  const categoriesGridMetadata = useMemo(
+    () => [
+      {
+        title: 'Назва',
+        prop: 'name',
+        type: 'action',
+        render: (v) => (
+          <button
+            type="button"
+            className="btn btn-link p-0 text-left"
+            onClick={(e) => {
+              e.preventDefault();
+              edit(v);
+            }}
+          >
+            {v.name}
+          </button>
+        ),
+      },
+      {
+        title: 'Опис',
+        prop: 'description',
+      },
+      {
+        title: 'CSS класи',
+        prop: 'classes',
+      },
+      {
+        title: 'Порядковий номер',
+        prop: 'order',
+        type: 'text',
+      },
+      {
+        type: 'action',
+        render: (v) => <FaTrash onClick={() => remove(v)} />,
+      },
+    ],
+    [],
+  );
+
   return (
     <div className="container-fluid">
       <div className="row">
@@ -109,42 +149,7 @@ function CategoriesContainer() {
         </div>
       </div>
       <div className="row mt-2">
-        <Table className="table-list">
-          <thead>
-            <tr>
-              <th>Ім'я</th>
-              <th>Опис</th>
-              <th>Підкатегорії</th>
-              <th>ID</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories &&
-              categories.map((v) => (
-                <tr key={v.entityId}>
-                  <td>
-                    <button
-                      type="button"
-                      className="btn btn-link p-0 text-left"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        edit(v);
-                      }}
-                    >
-                      {v.name}
-                    </button>
-                  </td>
-                  <td>{v.description}</td>
-                  <td>{!!v.children.length && v.children.map((v) => <p key={v}>{v}</p>)}</td>
-                  <td>{v.entityId}</td>
-                  <td className="text-info p-1 pr-3 pl-3">
-                    <FaTrash onClick={() => remove(v)} />
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
+        <SmartTable data={categories} metadata={categoriesGridMetadata} />
 
         <ConfirmModal
           visible={isConfirmModalVisible}
