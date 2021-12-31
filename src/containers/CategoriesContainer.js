@@ -1,11 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetToken } from '../hooks/get-token';
-import { getCategories as fetchCategories, updateCategory, deleteCategory, addCategory } from '../stores/client/clientActions';
+import {
+  getCategories as fetchCategories,
+  updateCategory,
+  deleteCategory,
+  addCategory,
+} from '../stores/client/clientActions';
 import { getCategories, getClientId } from '../stores/client/clientSelectors';
 import { FaTrash } from 'react-icons/fa';
 import AddEditCategoryModal from '../components/AddEditCategoryModal';
+import ConfirmModal from '../components/ConfirmModal';
 
 function CategoriesContainer() {
   let token = useGetToken();
@@ -16,6 +22,8 @@ function CategoriesContainer() {
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isAddCategoryModalVisible, setAddCategoryModalVisible] = useState(false);
+  const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   useEffect(() => {
     if (clientId && token) {
@@ -28,8 +36,32 @@ function CategoriesContainer() {
   };
 
   const remove = (data) => {
-    dispatch(deleteCategory(clientId, data, token));
+    setConfirmModalVisible(true);
+    setCategoryToDelete(data);
   };
+
+  const confirmDelete = useCallback(() => {
+    dispatch(deleteCategory(clientId, categoryToDelete, token));
+    setCategoryToDelete(null);
+    setConfirmModalVisible(false);
+  }, [clientId, categoryToDelete, token, dispatch]);
+
+  const confirmUpdateCategory = useCallback(
+    (data) => {
+      dispatch(updateCategory(clientId, { ...selectedCategory, ...data }, token));
+      setSelectedCategory(null);
+    },
+    [clientId, token, selectedCategory, dispatch],
+  );
+
+  const confirmAddCategory = useCallback(
+    (data) => {
+      dispatch(addCategory(clientId, data, token));
+      setSelectedCategory(null);
+      setAddCategoryModalVisible(false);
+    },
+    [clientId, token, dispatch],
+  );
 
   return (
     <div className="container-fluid">
@@ -43,10 +75,7 @@ function CategoriesContainer() {
           edit={true}
           visible={!!selectedCategory}
           data={selectedCategory}
-          onConfirm={(data) => {
-            dispatch(updateCategory(clientId, { ...selectedCategory, ...data }, token));
-            setSelectedCategory(null);
-          }}
+          onConfirm={confirmUpdateCategory}
           onCancel={() => {
             setSelectedCategory(null);
           }}
@@ -64,11 +93,7 @@ function CategoriesContainer() {
             classes: '',
             order: 0,
           }}
-          onConfirm={(data) => {
-            dispatch(addCategory(clientId, data, token));
-            setSelectedCategory(null);
-            setAddCategoryModalVisible(false);
-          }}
+          onConfirm={confirmAddCategory}
           onCancel={() => {
             setSelectedCategory(null);
             setAddCategoryModalVisible(false);
@@ -120,6 +145,16 @@ function CategoriesContainer() {
               ))}
           </tbody>
         </Table>
+
+        <ConfirmModal
+          visible={isConfirmModalVisible}
+          onConfirm={confirmDelete}
+          message={`Ви впевнені, що хочете видалити категорію ${categoryToDelete?.name} ?`}
+          onCancel={() => {
+            setConfirmModalVisible(false);
+            setCategoryToDelete(null);
+          }}
+        />
       </div>
     </div>
   );

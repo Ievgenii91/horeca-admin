@@ -17,7 +17,6 @@ export default function ConfirmModal({ visible, message, title, onCancel, onConf
       show={show}
       onHide={() => {
         if (typeof onCancel === 'function') {
-          setShow(false);
           onCancel();
         }
       }}
@@ -33,7 +32,6 @@ export default function ConfirmModal({ visible, message, title, onCancel, onConf
         <Button
           variant="secondary"
           onClick={() => {
-            setShow(false);
             if (typeof onCancel === 'function') {
               onCancel();
             }
