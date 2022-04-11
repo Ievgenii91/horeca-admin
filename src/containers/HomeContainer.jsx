@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { filterByName, removeClientProduct, saveClientProduct, sort } from '../stores/client/clientActions';
 import { Button, FormControl, InputGroup } from 'react-bootstrap';
@@ -36,14 +36,27 @@ function HomeContainer({
   let [selectedProduct, setSelectedProduct] = useState(null);
   let [productIdToRemove, setProductIdToRemove] = useState(null);
 
-  const showEditModal = (id) => {
-    if (id) {
-      setSelectedProduct(products.find((v) => v.id === id));
-    } else {
-      setSelectedProduct(new ProductModel());
-    }
-    setShow(true);
-  };
+  const showEditModal = useCallback(
+    (id) => {
+      if (id) {
+        setSelectedProduct(products.find((v) => v.id === id));
+      } else {
+        setSelectedProduct(new ProductModel());
+      }
+      setShow(true);
+    },
+    [products],
+  );
+
+  const toggleAvailability = useCallback(
+    (id) => {
+      const product = products.find((v) => v.id === id);
+      const transformed = ProductModel.transformModel({ ...product, available: !product.available });
+      debugger;
+      saveClientProduct(transformed, clientId, token);
+    },
+    [products, clientId, token, saveClientProduct],
+  );
 
   return (
     <div className="container-fluid">
@@ -70,9 +83,10 @@ function HomeContainer({
       <div className="row">
         <div className="col mb-2 mt-0 pl-2">
           <b>
-          Всього SKU: {products.length} | К-ть категорій: {categories.length} | З фото: {products.filter(v => (v.images && v.images.length)).length}
-          </b>        
-        </div>        
+            Всього SKU: {products.length} | К-ть категорій: {categories.length} | З фото:{' '}
+            {products.filter((v) => v.images && v.images.length).length}
+          </b>
+        </div>
       </div>
 
       <ProductTable
@@ -80,6 +94,7 @@ function HomeContainer({
         categories={categories}
         showEditModal={showEditModal}
         removeItem={setProductIdToRemove}
+        toggleAvailability={toggleAvailability}
         sort={sort}
       />
 
@@ -116,7 +131,7 @@ function HomeContainer({
 HomeContainer.defaultProps = {
   products: [],
   categories: [],
-}
+};
 
 export default connect(
   (state) => ({

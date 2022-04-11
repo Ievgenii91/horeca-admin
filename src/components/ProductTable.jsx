@@ -4,7 +4,7 @@ import ProductTableRows from './ProductTableRows';
 import { FaAngleUp, FaAngleDown } from 'react-icons/fa';
 import '../styles/table.css';
 
-export default function ProductTable({ products, categories, showEditModal, removeItem, sort }) {
+export default function ProductTable({ products, categories, showEditModal, removeItem, sort, toggleAvailability }) {
   const [nameSortedAsc, setNameSortedAsc] = useState(false);
   const [priceSortedAsc, setPriceSortedAsc] = useState(false);
 
@@ -28,6 +28,7 @@ export default function ProductTable({ products, categories, showEditModal, remo
                 Назва{' '}
                 {nameSortedAsc ? <FaAngleDown onClick={changeSortName} /> : <FaAngleUp onClick={changeSortName} />}
               </th>
+              <th className="text-center">Наявність/Бар</th>
               <th>Показувати на сайті</th>
               <th>фото?</th>
               <th>
@@ -35,7 +36,6 @@ export default function ProductTable({ products, categories, showEditModal, remo
                 {priceSortedAsc ? <FaAngleDown onClick={changeSortPrice} /> : <FaAngleUp onClick={changeSortPrice} />}
               </th>
               <th>Опис</th>
-              <th className="text-center">Наявність/Бар</th>
               <th>Категорія</th>
               <th>Теги</th>
               <th>Вага/Об'єм</th>
@@ -44,13 +44,14 @@ export default function ProductTable({ products, categories, showEditModal, remo
           </thead>
           <tbody>
             {products
-              .filter(v => v.visibleInUI)
+              .filter((v) => v.visibleInUI)
               .map((v, index) => (
                 <ProductTableRows
                   categories={categories}
                   key={'ts_' + index}
                   {...v}
                   showEditModal={showEditModal}
+                  toggleAvailability={toggleAvailability}
                   removeClientProduct={removeItem}
                 />
               ))}

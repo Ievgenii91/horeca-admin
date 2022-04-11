@@ -28,7 +28,7 @@ export default class ProductModel {
 
 ProductModel.transformModel = (input) => {
   const data = { ...input };
-  data.type = data.type ? 'bar' : 'food';
+  data.type = data.type === 'bar' ? 'bar' : 'food';
   data.category = data.category ? data.category.value : '';
   data.subCategory = data.subCategory ? data.subCategory.value : '';
   data.crossSales = data.selectedCrossSales ? data.selectedCrossSales.map((v) => v.value) : [];
