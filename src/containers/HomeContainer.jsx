@@ -52,7 +52,6 @@ function HomeContainer({
     (id) => {
       const product = products.find((v) => v.id === id);
       const transformed = ProductModel.transformModel({ ...product, available: !product.available });
-      debugger;
       saveClientProduct(transformed, clientId, token);
     },
     [products, clientId, token, saveClientProduct],

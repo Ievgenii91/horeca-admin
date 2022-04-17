@@ -39,11 +39,7 @@ export default function ProductTableRows(props) {
       </td>
       <td className="p-1 pr-3 pl-3 text-center d-flex align-items-baseline">
         <Form.Group className="mb-3">
-          <Form.Check
-            type="checkbox"
-            onChange={() => toggleAvailability(id)}
-            defaultChecked={available}
-          />
+          <Form.Check className="check" type="checkbox" onChange={() => toggleAvailability(id)} defaultChecked={available} />
         </Form.Group>
         <span className="ml-4">
           {type === 'bar' ? <FaFunnelDollar className="text-warning" /> : <FaHotdog className="text-info" />}
