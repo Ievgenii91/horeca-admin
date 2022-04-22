@@ -45,17 +45,17 @@ export default function ProductTableRows(props) {
           {type === 'bar' ? <FaFunnelDollar className="text-warning" /> : <FaHotdog className="text-info" />}
         </span>
       </td>
-      <td className="p-1 pr-3 pl-3">
+      {/* <td className="p-1 pr-3 pl-3">
         {visible ? <FaRegCheckCircle className="text-success" /> : <FaRegTimesCircle className="text-danger" />}
       </td>
       <td className="p-1 pr-3 pl-3">
         {hasImage && <FaRegCheckCircle className="text-success" />}
         {!hasImage && <FaRegDizzy className="text-danger" />}{' '}
-      </td>
+      </td> */}
       <td className="p-1 pr-3 pl-3">{price}</td>
       <td className="p-1 pr-3 pl-3">{description}</td>
       <td className="p-1 pr-3 pl-3">{categories.find((v) => v.entityId === category)?.name}</td>
-      <td className="p-1 pr-3 pl-3">{tags}</td>
+      {/* <td className="p-1 pr-3 pl-3">{tags}</td> */}
       <td className="p-1 pr-3 pl-3">
         {weight || capacity} {hasSizes ? (weight ? 'мг' : 'мл') : ''}
       </td>

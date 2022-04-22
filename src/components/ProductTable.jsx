@@ -29,15 +29,15 @@ export default function ProductTable({ products, categories, showEditModal, remo
                 {nameSortedAsc ? <FaAngleDown onClick={changeSortName} /> : <FaAngleUp onClick={changeSortName} />}
               </th>
               <th className="text-center">Наявність/Бар</th>
-              <th>Показувати на сайті</th>
-              <th>фото?</th>
+              {/* <th>Показувати на сайті</th> */}
+              {/* <th>фото?</th> */}
               <th>
                 Ціна ₴{' '}
                 {priceSortedAsc ? <FaAngleDown onClick={changeSortPrice} /> : <FaAngleUp onClick={changeSortPrice} />}
               </th>
               <th>Опис</th>
               <th>Категорія</th>
-              <th>Теги</th>
+              {/* <th>Теги</th> */}
               <th>Вага/Об'єм</th>
               <th></th>
             </tr>

@@ -87,7 +87,7 @@ function EditProduct(props) {
   const getCategory = useCallback(
     (value) => {
       if (!value) return null;
-      const { name: label } = categories.find((v) => v.entityId === value);
+      const { name: label } = categories.find((v) => v.entityId === value) || {};
       return {
         value,
         label,
@@ -206,7 +206,7 @@ function EditProduct(props) {
   return (
     <Form noValidate onSubmit={handleSubmit(submit)} id="product-form">
       <div className="row">
-        <div className="col-6">
+        <div className="col-12">
           <Form.Group className="mb-3">
             <Form.Control
               {...register('name', { required: true })}
@@ -320,7 +320,7 @@ function EditProduct(props) {
             </Form.Group>
               )} */}
         </div>
-        <div className="col-6">
+        {/* <div className="col-6">
           {showProgress && <ProgressBar now={progress} className="mb-4" />}
           <ReactS3Uploader
             className="btn btn-primary"
@@ -391,7 +391,7 @@ function EditProduct(props) {
             <ReactTags tags={tags.map(v => ({ id: v, text: v}))} />
           </Form.Group>
            */}
-        </div>
+        {/* </div>  */}
       </div>
     </Form>
   );
